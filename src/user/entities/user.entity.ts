@@ -4,7 +4,7 @@ import { UserRoleEnum } from '../../enums/user-role.enum';
 import { Exclude } from 'class-transformer';
 import { InspectionEntity } from 'src/inspection/entites/inspection.entity';
 
-@Entity('user')
+@Entity({name: 'user'})
 export class UserEntity extends TimestampEntites{
 
   @PrimaryGeneratedColumn()
@@ -29,11 +29,10 @@ export class UserEntity extends TimestampEntites{
   salt: string;
 
   @Column({
-    type: 'enum',
-    enum: UserRoleEnum,
+    type: 'enum', enum: UserRoleEnum,
     default: UserRoleEnum.USER
   })
-  role: string;
+  role: UserRoleEnum;
 
   @OneToMany(() => InspectionEntity, 
   inspection => inspection.user,
@@ -41,13 +40,5 @@ export class UserEntity extends TimestampEntites{
     nullable: true,
   })
   inspections: InspectionEntity[];
-  /* @OneToMany(
-    type => CvEntity,
-    (cv) => cv.user,
-    {
-      nullable: true,
-      cascade: true
-    }
-  )
-  cvs: CvEntity[]; */
+  
 }

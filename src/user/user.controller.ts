@@ -4,7 +4,7 @@ import { UserService } from './user.service';
 import { LoginCredentialsDto } from './dto/login-credentials.dto';
 import { UserEntity } from './entities/user.entity';
 
-@Controller('user')
+@Controller('users')
 export class UserController {
   constructor(
     private userService: UserService
@@ -15,6 +15,7 @@ export class UserController {
     @Body() userData: UserSubscribeDto
   ) {
     return this.userService.register(userData);
+   
   }
 
   @Post('login')

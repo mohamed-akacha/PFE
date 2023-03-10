@@ -1,10 +1,10 @@
 import { InspectionType } from "src/enums/inspec-type.enum";
 import { EvaluationEntity } from "src/evaluation/entities/evaluation.entity";
-import { InspectionEntity } from "src/inspection/entites/inspection.entity";
-import { Column, Entity, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { TimestampEntites } from "src/Generics/timestamp.entites.";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
-@Entity()
-export class EvaluationPointEntity {
+@Entity({name: 'point-evaluation'})
+export class EvaluationPointEntity extends TimestampEntites {
 
   @PrimaryGeneratedColumn()
   id: number;
@@ -15,9 +15,6 @@ export class EvaluationPointEntity {
   @Column({ type: "enum", enum: InspectionType })
   type: InspectionType;
 
-  @ManyToMany(() => InspectionEntity, inspection => inspection.evaluationPoints)
-  inspections: InspectionEntity[];
-
-  @OneToMany(() => EvaluationEntity, inspectionEvaluation => inspectionEvaluation.evaluationPoint)
-  Evaluations: EvaluationEntity[];
+  @OneToMany(() => EvaluationEntity, evaluation => evaluation.evaluationPoint)
+  evaluations: EvaluationEntity[];
 }

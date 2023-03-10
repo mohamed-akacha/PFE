@@ -15,11 +15,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     @InjectRepository(UserEntity)
     private userRepository: Repository<UserEntity>
   ) {
+    //console.log(configService.get('SECRET'));
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
       secretOrKey: configService.get('SECRET'),
+      
     });
+    
   }
 
   async validate(payload: PayloadInterface) {

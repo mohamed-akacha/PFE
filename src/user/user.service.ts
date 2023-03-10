@@ -1,12 +1,12 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { UserSubscribeDto } from './dto/user-subscribe.dto';
-import { UserEntity } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { IsNull, Not, Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { LoginCredentialsDto } from './dto/login-credentials.dto';
 import { JwtService } from '@nestjs/jwt';
 import { UserRoleEnum } from '../enums/user-role.enum';
+import { UserEntity } from './entities/user.entity';
 @Injectable()
 export class UserService {
   constructor(
@@ -23,15 +23,19 @@ export class UserService {
     user.password = await bcrypt.hash(user.password, user.salt);
     try {
       await this.userRepository.save(user);
-    } catch (e) {
-      throw new ConflictException(`Le username et le email doivent être unique`);
-    }
-    return {
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        role: user.role
+      return {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      role: user.role
       };
+      } catch (e) {
+      if (e.code === '23505') {
+      // Le username ou l'email existe déjà
+      throw new ConflictException('Le username et le email doivent être unique');
+      }
+      throw new InternalServerErrorException();
+      }
 
   }
 
@@ -48,9 +52,8 @@ export class UserService {
       .getOne();
     // console.log(user);
     // Si not user je déclenche une erreur
-
     if (!user)
-      throw new NotFoundException('username ou password erronée');
+      throw new NotFoundException('Nom d\'utilisateur ou mot de passe incorrect.');
     // Si oui je vérifie est ce que le mot est correct ou pas
     const hashedPassword = await bcrypt.hash(password, user.salt);
     if (hashedPassword === user.password) {
@@ -65,13 +68,13 @@ export class UserService {
       };
     } else {
       // Si mot de passe incorrect je déclenche une erreur
-      throw new NotFoundException('username ou password erronée');
+      throw new NotFoundException('Nom d\'utilisateur ou mot de passe incorrect.');
     }
   }
 
-  isOwnerOrAdmin(objet, user) {
+ /*  isOwnerOrAdmin(objet, user) {
     return user.role === UserRoleEnum.ADMIN || (objet.user && objet.user.id === user.id);
-  }
+  } */
 
   async findAll(options = null): Promise<UserEntity[]> {
     if (options) {
@@ -79,6 +82,25 @@ export class UserService {
     }
     return await this.userRepository.find();
   }
+
+  async getUserById(idUser?: number){
+   //console.log('idUser--------------',idUser);
+    
+      let [h]=await this.userRepository.query("select * from user where id = ?" , [idUser]);
+  
+       return h!==undefined?h:null;
+    
+  }
+
+  // Méthode privée pour vérifier si l'utilisateur est un administrateur
+ isAdmin(user: UserEntity): boolean {
+  return user.role === UserRoleEnum.ADMIN;
+}
+
+// Méthode privée pour vérifier si l'utilisateur est bien le propriétaire de l'inspection
+ isOwner(user: UserEntity, objet): boolean {
+  return user.id === objet.user.id;
+}
 }
 
 
