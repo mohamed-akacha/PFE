@@ -1,8 +1,9 @@
 import { OneToMany, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-import { TimestampEntites } from '../../Generics/timestamp.entites.';
+import { TimestampEntites } from '../../generics/timestamp.entites.';
 import { UserRoleEnum } from '../../enums/user-role.enum';
 import { Exclude } from 'class-transformer';
 import { InspectionEntity } from 'src/inspection/entites/inspection.entity';
+import { IsPhoneNumber } from 'class-validator';
 
 @Entity({name: 'user'})
 export class UserEntity extends TimestampEntites{
@@ -20,6 +21,10 @@ export class UserEntity extends TimestampEntites{
   })
   email: string;
 
+  @Column()
+  @IsPhoneNumber()
+  tel: string;
+  
   @Column()
   @Exclude()
   password: string;

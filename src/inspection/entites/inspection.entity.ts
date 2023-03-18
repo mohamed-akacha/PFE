@@ -1,8 +1,9 @@
 import { InspectionType } from "src/enums/inspec-type.enum";
 import { EvaluationEntity } from "src/evaluation/entities/evaluation.entity";
-import { TimestampEntites } from "src/Generics/timestamp.entites.";
+import { TimestampEntites } from "src/generics/timestamp.entites.";
+import { InspectionUnitEntity } from "src/inspection-unit/entities/inspection-unit.entity";
 import { UserEntity } from "src/user/entities/user.entity";
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity({name: 'inspection'})
 export class InspectionEntity extends TimestampEntites {
@@ -28,6 +29,13 @@ export class InspectionEntity extends TimestampEntites {
   @ManyToOne(() => UserEntity, user => user.inspections , {nullable: true, })
   user: UserEntity;
 
-  @OneToMany(() => EvaluationEntity, evaluation => evaluation.inspection)
+  @OneToMany(() => EvaluationEntity, evaluation => evaluation.inspection )
   evaluations: EvaluationEntity[];
+
+  @ManyToOne(() => InspectionUnitEntity, { nullable: true })
+  @JoinColumn()
+  unit: InspectionUnitEntity;
+
+
+
 }

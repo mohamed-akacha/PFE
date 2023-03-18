@@ -1,32 +1,42 @@
-import { IsString, IsOptional, IsEnum, IsDateString, IsBoolean, IsNumber } from 'class-validator';
+import { IsString, IsOptional, IsEnum, IsDateString, IsBoolean, IsNumber, IsDate, IsNotEmpty } from 'class-validator';
 import { InspectionType } from 'src/enums/inspec-type.enum';
-import { UserEntity } from 'src/user/entities/user.entity';
 
 
 export class UpdateInspectionDto {
   @IsOptional()
+  @IsNotEmpty()
   @IsString()
   description: string;
 
   @IsOptional()
-  @IsDateString()
+  @IsNotEmpty()
+  @IsDate()
   datePrevue: Date;
 
+  
   @IsOptional()
+  @IsNotEmpty()
   @IsEnum(InspectionType)
   type: InspectionType;
 
-  @IsOptional()
+  /* @IsOptional()
   @IsBoolean()
   statut: boolean;
 
 
   @IsOptional()
-  @IsDateString()
-  dateInspection : Date;
-
-
+  @IsDate()
+  dateInspection : Date; 
+ */
+  
   @IsNumber()
+  @IsNotEmpty()
   @IsOptional()
-  inspecteurId: number; // le champ inspecteur est facultatif
+  inspecteurId?: number; // le champ inspecteur est facultatif
+
+  
+  @IsNumber()
+  @IsNotEmpty()
+  @IsOptional()
+  unitId?: number;
 }

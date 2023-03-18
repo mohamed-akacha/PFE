@@ -1,5 +1,5 @@
 import { EvaluationPointEntity } from "src/evaluation-point/entities/evaluation-point.entity";
-import { TimestampEntites } from "src/Generics/timestamp.entites.";
+import { TimestampEntites } from "src/generics/timestamp.entites.";
 import { InspectionEntity } from "src/inspection/entites/inspection.entity";
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
@@ -15,7 +15,7 @@ export class EvaluationEntity extends TimestampEntites {
   @Column({ nullable: true })
   pieceJointe: string;
 
-  @ManyToOne(() => InspectionEntity, inspection => inspection.evaluations)
+  @ManyToOne(() => InspectionEntity, inspection => inspection.evaluations,{ nullable: true })
   inspection: InspectionEntity;
 
   @ManyToOne(() => EvaluationPointEntity, evaluationPoint => evaluationPoint.evaluations)

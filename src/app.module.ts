@@ -11,6 +11,9 @@ import { UserEntity } from './user/entities/user.entity';
 import { InspectionEntity } from './inspection/entites/inspection.entity';
 import { EvaluationPointEntity } from './evaluation-point/entities/evaluation-point.entity';
 import { EvaluationEntity } from './evaluation/entities/evaluation.entity';
+import { InspectionUnitModule } from './inspection-unit/inspection-unit.module';
+import { InspectionUnitEntity } from './inspection-unit/entities/inspection-unit.entity';
+
 
 @Module({
   imports: [
@@ -21,20 +24,23 @@ import { EvaluationEntity } from './evaluation/entities/evaluation.entity';
     }),
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host:'localhost', //process.env.DB_HOST,
-      port: 3306,//parseInt(process.env.DB_PORT),
-      username: 'root',//process.env.DB_USERNAME,
-      password: '',//process.env.DB_PASSWORD,
-      database: 'checkUp',//process.env.DB_NAME,
-      // autoLoadEntities: true,
-      entities: [UserEntity,InspectionEntity,EvaluationPointEntity,EvaluationEntity],
+      host:process.env.DB_HOST,
+      port: parseInt(process.env.DB_PORT),
+      username: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
+    // autoLoadEntities: true,
+      entities: [UserEntity,InspectionEntity,EvaluationPointEntity,EvaluationEntity,InspectionUnitEntity],
+      //__dirname + '/**/*.entity{.ts,.js}'
      // synchronize: true,
       debug: false
     }),
     UserModule,
     InspectionModule,
     EvaluationPointModule,
-    EvaluationModule,],
+    EvaluationModule,
+    InspectionUnitModule,
+    ],
   controllers: [AppController],
   providers: [AppService],
 })

@@ -8,7 +8,8 @@ import { UserEntity } from 'src/user/entities/user.entity';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from 'src/user/strategy/passport-jwt.strategy';
-import { RoleGuard } from 'src/user/Guards/rôles.guard';
+import { RoleGuard } from 'src/user/guards/rôles.guard';
+import { InspectionUnitModule } from 'src/inspection-unit/inspection-unit.module';
 
 @Module({
   imports:[
@@ -22,9 +23,10 @@ import { RoleGuard } from 'src/user/Guards/rôles.guard';
           expiresIn: 3600
         }
       }),
-    UserModule
+    UserModule,InspectionUnitModule
   ],
   controllers: [InspectionController],
-  providers: [InspectionService, JwtStrategy, RoleGuard]
+  providers: [InspectionService, JwtStrategy, RoleGuard],
+  exports: [InspectionService]
 })
 export class InspectionModule {}

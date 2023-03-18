@@ -1,5 +1,6 @@
 import {
   Body,
+  ClassSerializerInterceptor,
   Controller,
   Delete,
   Get,
@@ -10,12 +11,13 @@ import {
   Post,
   UnauthorizedException,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { Roles } from 'src/decorators/roles.decorator';
 import { User } from 'src/decorators/user.decorator';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { JwtAuthGuard } from 'src/user/guards/jwt-auth.guard';
-import { RoleGuard } from 'src/user/Guards/rôles.guard';
+import { RoleGuard } from 'src/user/guards/rôles.guard';
 import { UserService } from 'src/user/user.service';
 import { AddInspectionDto } from './dto/add-inspection.dto';
 import { UpdateInspectionDto } from './dto/update-inspection.dto';
@@ -23,6 +25,7 @@ import { InspectionEntity } from './entites/inspection.entity';
 import { InspectionService } from './inspection.service';
 
 @Controller('inspections')
+@UseInterceptors(ClassSerializerInterceptor)
 @UseGuards(JwtAuthGuard,RoleGuard)
 export class InspectionController {
   constructor(
@@ -35,7 +38,7 @@ export class InspectionController {
   async createInspection(
     @User() user: UserEntity,
     @Body() inspectionDto: AddInspectionDto,
-  ) {
+  ) : Promise<Partial<InspectionEntity>>{
     try {
       return await this.inspectionService.createInspection(user, inspectionDto);
     } catch (error) {
@@ -76,17 +79,36 @@ export class InspectionController {
   }
 
   @Patch(':id')
-  @Roles('admin','user')
-  async updateInspection(
+  @Roles('admin')
+  async updateInspectionByAdmin(
     @User() user: UserEntity,
     @Param('id', ParseIntPipe) inspectionId: number,
     @Body() updateInspectionDto: UpdateInspectionDto,
   ): Promise<InspectionEntity> {
     try {
-      return await this.inspectionService.updateInspection(
+      return await this.inspectionService.updateInspectionByAdmin(
         user,
         inspectionId,
         updateInspectionDto,
+      );
+    } catch (error) {
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      }
+      throw new NotFoundException(error.message);
+    }
+  }
+
+  @Patch('evaluate/:id')
+  @Roles('user')
+  async evaluateInspection(
+    @User() user: UserEntity,
+    @Param('id', ParseIntPipe) inspectionId: number
+  ): Promise<InspectionEntity> {
+    try {
+      return await this.inspectionService.evaluateInspection(
+        user,
+        inspectionId
       );
     } catch (error) {
       if (error instanceof UnauthorizedException) {
@@ -101,9 +123,9 @@ export class InspectionController {
   async softDeleteInspection(
     @User() user: UserEntity,
     @Param('id', ParseIntPipe) inspectionId: number,
-  ): Promise<void> {
+  ): Promise<string> {
     try {
-      await this.inspectionService.softDeleteInspection(user, inspectionId);
+     return await this.inspectionService.softDeleteInspection(user, inspectionId);
     } catch (error) {
       if (error instanceof UnauthorizedException) {
         throw error;
@@ -118,9 +140,9 @@ export class InspectionController {
   async restoreInspection(
     @User() user: UserEntity,
     @Param('id', ParseIntPipe) inspectionId: number,
-  ): Promise<void> {
+  ): Promise<InspectionEntity> {
     try {
-      await this.inspectionService.restoreInspection(user, inspectionId);
+     return await this.inspectionService.restoreInspection(user, inspectionId);
     } catch (error) {
       if (error instanceof UnauthorizedException) {
         throw error;
@@ -134,9 +156,9 @@ export class InspectionController {
   async deleteInspection(
     @User() user: UserEntity,
     @Param('id', ParseIntPipe) inspectionId: number,
-  ): Promise<void> {
+  ): Promise<string> {
     try {
-      await this.inspectionService.deleteInspection(user, inspectionId);
+     return await this.inspectionService.deleteInspection(user, inspectionId);
     } catch (error) {
       if (error instanceof UnauthorizedException) {
         throw error;

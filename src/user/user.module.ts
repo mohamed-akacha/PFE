@@ -7,6 +7,7 @@ import { JwtModule } from '@nestjs/jwt';
 import * as dotenv from 'dotenv';
 import { JwtStrategy } from './strategy/passport-jwt.strategy';
 import { UserEntity } from './entities/user.entity';
+import { RoleGuard } from './guards/rôles.guard';
 
 
 dotenv.config();
@@ -26,7 +27,7 @@ dotenv.config();
   controllers: [
     UserController
   ],
-  providers: [UserService, JwtStrategy],
+  providers: [UserService, JwtStrategy,RoleGuard],
   exports: [UserService]
 })
 export class UserModule {}
