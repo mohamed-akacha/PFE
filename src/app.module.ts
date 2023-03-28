@@ -13,6 +13,10 @@ import { EvaluationPointEntity } from './evaluation-point/entities/evaluation-po
 import { EvaluationEntity } from './evaluation/entities/evaluation.entity';
 import { InspectionUnitModule } from './inspection-unit/inspection-unit.module';
 import { InspectionUnitEntity } from './inspection-unit/entities/inspection-unit.entity';
+import { InstitutionModule } from './institution/institution.module';
+import { BlocModule } from './bloc/bloc.module';
+import { InstitutionEntity } from './institution/entities/institution.entity';
+import { BlocEntity } from './bloc/entities/bloc.entity';
 
 
 @Module({
@@ -30,7 +34,8 @@ import { InspectionUnitEntity } from './inspection-unit/entities/inspection-unit
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
     // autoLoadEntities: true,
-      entities: [UserEntity,InspectionEntity,EvaluationPointEntity,EvaluationEntity,InspectionUnitEntity],
+      entities: [UserEntity,InspectionEntity,EvaluationPointEntity,
+        EvaluationEntity,InspectionUnitEntity,InstitutionEntity,BlocEntity],
       //__dirname + '/**/*.entity{.ts,.js}'
      // synchronize: true,
       debug: false
@@ -40,6 +45,8 @@ import { InspectionUnitEntity } from './inspection-unit/entities/inspection-unit
     EvaluationPointModule,
     EvaluationModule,
     InspectionUnitModule,
+    InstitutionModule,
+    BlocModule,
     ],
   controllers: [AppController],
   providers: [AppService],

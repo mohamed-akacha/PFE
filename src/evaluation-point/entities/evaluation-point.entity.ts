@@ -15,6 +15,6 @@ export class EvaluationPointEntity extends TimestampEntites {
   @Column({ type: "enum", enum: InspectionType })
   type: InspectionType;
 
-  @OneToMany(() => EvaluationEntity, evaluation => evaluation.evaluationPoint)
+  @OneToMany(() => EvaluationEntity, evaluation => evaluation.evaluationPoint,{ nullable: true })
   evaluations: EvaluationEntity[];
 }

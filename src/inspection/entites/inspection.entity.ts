@@ -29,7 +29,7 @@ export class InspectionEntity extends TimestampEntites {
   @ManyToOne(() => UserEntity, user => user.inspections , {nullable: true, })
   user: UserEntity;
 
-  @OneToMany(() => EvaluationEntity, evaluation => evaluation.inspection )
+  @OneToMany(() => EvaluationEntity, evaluation => evaluation.inspection ,{ nullable: true })
   evaluations: EvaluationEntity[];
 
   @ManyToOne(() => InspectionUnitEntity, { nullable: true })

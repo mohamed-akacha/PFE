@@ -72,10 +72,6 @@ export class InspectionService {
   }
 
 
-
-
-
-
   async getInspectionById(userReq: UserEntity, inspectionId: number): Promise<InspectionEntity> {
     // Récupérer l'inspection spécifique en utilisant son ID avec les informations de l'utilisateur
     const inspection = await this.inspectionRepository.createQueryBuilder("inspection")
@@ -174,11 +170,11 @@ export class InspectionService {
     if (!this.userService.isAdmin(user)) {
       throw new UnauthorizedException('Vous n\'êtes pas autorisé à effectuer cette action.');
     }
-    // Récupérer l'inspection spécifique en utilisant son ID
+   /*  // Récupérer l'inspection spécifique en utilisant son ID
     const inspection = await this.getInspectionById(user, inspectionId);
     if (!inspection) {
       throw new NotFoundException('Inspection introuvable.');
-    }
+    } */
     // Marquer l'inspection comme "supprimée" en la soft-deletant
     const result = await this.inspectionRepository.softDelete({ id: inspectionId });
     // Vérifier si l'inspection a été supprimé

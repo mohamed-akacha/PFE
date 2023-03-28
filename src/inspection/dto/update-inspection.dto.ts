@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsEnum, IsDateString, IsBoolean, IsNumber, IsDate, IsNotEmpty } from 'class-validator';
+import { IsString, IsOptional, IsEnum, IsDateString, IsBoolean, IsNumber, IsDate, IsNotEmpty, IsInt } from 'class-validator';
 import { InspectionType } from 'src/enums/inspec-type.enum';
 
 
@@ -30,12 +30,12 @@ export class UpdateInspectionDto {
  */
   
   @IsNumber()
-  @IsNotEmpty()
+  @IsInt()
   @IsOptional()
   inspecteurId?: number; // le champ inspecteur est facultatif
 
   
-  @IsNumber()
+  @IsInt()
   @IsNotEmpty()
   @IsOptional()
   unitId?: number;

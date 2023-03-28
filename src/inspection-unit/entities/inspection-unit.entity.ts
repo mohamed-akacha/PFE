@@ -1,8 +1,11 @@
+import { BlocEntity } from 'src/bloc/entities/bloc.entity';
+import { TimestampEntites } from 'src/generics/timestamp.entites.';
 import { InspectionEntity } from 'src/inspection/entites/inspection.entity';
-import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { InstitutionEntity } from 'src/institution/entities/institution.entity';
+import { Column, Entity, OneToMany, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity({name: 'unit-inspection'})
-export class InspectionUnitEntity extends BaseEntity {
+@Entity({ name: 'unit-inspection' })
+export class InspectionUnitEntity extends TimestampEntites {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -14,4 +17,10 @@ export class InspectionUnitEntity extends BaseEntity {
 
   @OneToMany(() => InspectionEntity, inspection => inspection.unit)
   inspections: InspectionEntity[];
+
+  @ManyToOne(() => InstitutionEntity, institution => institution.inspectionUnits)
+  institution: InstitutionEntity;
+
+  @OneToMany(() => BlocEntity, bloc => bloc.inspectionUnit)
+  blocs: BlocEntity[];
 }

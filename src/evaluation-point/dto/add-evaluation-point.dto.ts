@@ -1,4 +1,5 @@
-import { IsString, IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
+import { IsString, IsNotEmpty, IsNumber, IsOptional, IsEnum } from 'class-validator';
+import { InspectionType } from 'src/enums/inspec-type.enum';
 
 export class AddEvaluationPointDto {
 
@@ -7,14 +8,14 @@ export class AddEvaluationPointDto {
   description: string;
 
   @IsNotEmpty()
-  @IsString()
-  type: string;
+  @IsEnum(InspectionType)
+  type: InspectionType;
 
-  @IsOptional()
+ /*  @IsOptional()
   @IsNumber()
   score?: number;
 
   @IsString()
-  pieceJointe?: string;
+  pieceJointe?: string; */
 
 }

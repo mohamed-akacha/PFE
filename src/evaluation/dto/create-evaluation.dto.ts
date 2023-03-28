@@ -1,10 +1,14 @@
 import { IsNumber, IsString, IsOptional, IsNotEmpty, Max, Min } from 'class-validator';
 
-export class AddEvaluationDto {
+export class CreateEvaluationDto {
 
   @IsNotEmpty()
   @IsNumber()
   inspectionId: number;
+
+  @IsNotEmpty()
+  @IsNumber()
+  blocId: number;
 
   @IsNotEmpty()
   @IsNumber()
@@ -13,7 +17,7 @@ export class AddEvaluationDto {
   @IsNotEmpty()
   @IsNumber()
   @Min(0)
-  @Max(5)
+  @Max(10)
   score: number;
 
   @IsString()

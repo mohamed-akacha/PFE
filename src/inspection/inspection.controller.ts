@@ -9,6 +9,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Put,
   UnauthorizedException,
   UseGuards,
   UseInterceptors,
@@ -78,7 +79,7 @@ export class InspectionController {
     }
   }
 
-  @Patch(':id')
+  @Put(':id')
   @Roles('admin')
   async updateInspectionByAdmin(
     @User() user: UserEntity,
@@ -136,7 +137,7 @@ export class InspectionController {
 
 
   @Roles('admin')
-  @Post('restore/:id')
+  @Put('restore/:id')
   async restoreInspection(
     @User() user: UserEntity,
     @Param('id', ParseIntPipe) inspectionId: number,
