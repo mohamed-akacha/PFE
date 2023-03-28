@@ -16,6 +16,32 @@ export class UserService {
     private jwtService: JwtService
   ) {
   }
+  async seedUser(userData: UserSubscribeDto): Promise<Partial<UserEntity>> {
+
+    const user = this.userRepository.create({
+      ...userData
+    });
+    user.salt = await bcrypt.genSalt();
+    user.password = await bcrypt.hash(user.password, user.salt);
+    try {
+      return await this.userRepository.save(user);
+    } catch (e) {
+      console.log(e.message);
+      if (e.errno === 1062) {
+        throw new ConflictException('Le username et le email doivent être unique');
+      }
+      throw new InternalServerErrorException();
+    }
+
+  }
+  async usersCount(): Promise<Number> {
+    try {
+      
+      return await this.userRepository.count();
+    } catch (error) {
+      throw new InternalServerErrorException(`Une erreur est survenue lors de la récupération des utilisateurs: ${error}`);
+    }
+  }
   async createUser(userReq: UserEntity, userData: UserSubscribeDto): Promise<Partial<UserEntity>> {
 
     if (!this.isAdmin(userReq)) {

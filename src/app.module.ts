@@ -17,7 +17,7 @@ import { InstitutionModule } from './institution/institution.module';
 import { BlocModule } from './bloc/bloc.module';
 import { InstitutionEntity } from './institution/entities/institution.entity';
 import { BlocEntity } from './bloc/entities/bloc.entity';
-
+import { AdminSeed } from './admin.seed';
 
 @Module({
   imports: [
@@ -33,11 +33,12 @@ import { BlocEntity } from './bloc/entities/bloc.entity';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-    // autoLoadEntities: true,
+    autoLoadEntities: true,
       entities: [UserEntity,InspectionEntity,EvaluationPointEntity,
         EvaluationEntity,InspectionUnitEntity,InstitutionEntity,BlocEntity],
+        
       //__dirname + '/**/*.entity{.ts,.js}'
-     // synchronize: true,
+      synchronize: true,
       debug: false
     }),
     UserModule,
@@ -49,6 +50,6 @@ import { BlocEntity } from './bloc/entities/bloc.entity';
     BlocModule,
     ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService,AdminSeed],
 })
 export class AppModule {}
