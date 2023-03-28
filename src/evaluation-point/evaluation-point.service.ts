@@ -38,15 +38,9 @@ export class EvaluationPointService {
     }
   }
 
-  async getAllEvaluationPoints(user: UserEntity): Promise<EvaluationPointEntity[]> {
+  async getAllEvaluationPoints(): Promise<EvaluationPointEntity[]> {
     try {
       const queryBuilder = this.evaluationPointRepository.createQueryBuilder('evaluationPoint');
-      if (!this.userService.isAdmin(user)) {
-        queryBuilder.leftJoin('evaluationPoint.evaluations', 'evaluation')
-          .leftJoin('evaluation.inspection', 'inspection')
-          .leftJoin('inspection.user', 'user')
-          .where('user.id = :userId', { userId: user.id });
-      }
       return await queryBuilder.getMany();
     } catch (error) {
       throw new InternalServerErrorException("Une erreur est survenue lors de la récupération des points d'évaluation.", error.message);
@@ -54,28 +48,21 @@ export class EvaluationPointService {
   }
 
   async getEvaluationPointById(id: number, user: UserEntity): Promise<EvaluationPointEntity> {
-    //  try {
     const query = this.evaluationPointRepository.createQueryBuilder('evaluationPoint')
-      .leftJoinAndSelect('evaluationPoint.evaluations', 'evaluation')
+    /*   .leftJoinAndSelect('evaluationPoint.evaluations', 'evaluation')
       .leftJoinAndSelect('evaluation.inspection', 'inspection')
       .where('evaluationPoint.id = :id', { id });
-
-    if (!this.userService.isAdmin(user)) {
-      query.andWhere('inspection.userId = :userId', { userId: user.id });
-    }
-
+   */
+    //query.andWhere('inspection.userId = :userId', { userId: user.id });
+  
     const evaluationPoint = await query.getOne();
-
+  
     if (!evaluationPoint) {
       throw new NotFoundException(`Le point d'évaluation avec l'ID ${id} n'existe pas`);
     }
-
+  
     return evaluationPoint;
-    /*  } catch(error) {
-       throw new InternalServerErrorException("Une erreur est survenue lors de la récupération d'un point d'évaluation.", error.message);
-     } */
   }
-
 
   async getPointsByType(type: InspectionType): Promise<EvaluationPointEntity[]> {
     // Vérifier que le type d'inspection est valide

@@ -7,10 +7,12 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtAuthGuard } from 'src/user/guards/jwt-auth.guard';
 import { RoleGuard } from 'src/user/guards/rôles.guard';
+import { UserEntity } from 'src/user/entities/user.entity';
+import { UserModule } from 'src/user/user.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([BlocEntity]),
+    TypeOrmModule.forFeature([BlocEntity,UserEntity]),
     PassportModule.register({
       defaultStrategy: 'jwt'
     }),
@@ -19,7 +21,8 @@ import { RoleGuard } from 'src/user/guards/rôles.guard';
         signOptions: {
           expiresIn: 3600
         }
-      })
+      }),
+      UserModule
   ],
   controllers: [BlocController],
   providers: [BlocService , RoleGuard ,JwtAuthGuard ],

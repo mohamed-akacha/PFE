@@ -32,9 +32,9 @@ export class EvaluationPointController {
 
   @Get()
   @Roles('admin','user')
-  async getAllEvaluationPoints(@User() user: UserEntity): Promise<EvaluationPointEntity[]> {
+  async getAllEvaluationPoints(): Promise<EvaluationPointEntity[]> {
     try {
-    return await this.evaluationPointService.getAllEvaluationPoints(user);
+    return await this.evaluationPointService.getAllEvaluationPoints();
   } catch (error) {
     if (error instanceof UnauthorizedException) {
       throw error;
