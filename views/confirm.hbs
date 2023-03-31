@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Register</title>
+</head>
+<body>
+<form id="register-form">
+  <label for="fullname">Full Name:</label>
+  <input type="text" id="fullname" name="fullname"><br><br>
+
+  <label for="password">Password:</label>
+  <input type="password" id="password" name="password"><br><br>
+
+  <label for="confirm-password">Confirm Password:</label>
+  <input type="password" id="confirm-password" name="confirm-password"><br><br>
+
+  <label for="telephone">Telephone:</label>
+  <input type="tel" id="telephone" name="telephone"><br><br>
+
+  <input type="submit" value="Register">
+</form>
+
+<script>
+  const form = document.querySelector('#register-form');
+ const userId = '{{ userId }}';
+alert (userId)
+  form.addEventListener('submit', (event) => {
+    event.preventDefault(); // prevent form submission
+
+    const username = document.querySelector('#fullname').value;
+    const password = document.querySelector('#password').value;
+    const confirmPassword = document.querySelector('#confirm-password').value;
+    const tel = document.querySelector('#telephone').value;
+
+    if (password !== confirmPassword) {
+      alert('Passwords do not match!');
+      return;
+    }
+
+    const data = {username, password, tel };
+    alert(JSON.stringify(data))
+    fetch(`http://localhost:3000/auth/${userId}`, { // make a PUT request to the updateUser endpoint with the userId parameter
+      method: 'put',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log(data);
+      alert('Registration successful!');
+    })
+    .catch(error => console.error(error));
+  });
+</script>
+</body>
+</html>

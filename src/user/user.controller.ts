@@ -1,4 +1,4 @@
-import { Body, ClassSerializerInterceptor, Controller, Delete, Get, HttpException, HttpStatus, InternalServerErrorException, Param, ParseIntPipe, Patch, Post, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, ClassSerializerInterceptor, Controller, Delete, Get, HttpException, HttpStatus, InternalServerErrorException, Param, ParseIntPipe, Patch, Post, Put, Render, UseGuards, UseInterceptors } from '@nestjs/common';
 import { UserSubscribeDto } from './dto/user-subscribe.dto';
 import { UserService } from './user.service';
 import { LoginCredentialsDto } from './dto/login-credentials.dto';
@@ -7,7 +7,10 @@ import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { RoleGuard } from './guards/rôles.guard';
 import { Roles } from 'src/decorators/roles.decorator';
 import { User } from 'src/decorators/user.decorator';
-
+import { ApiTags } from '@nestjs/swagger';
+import { UpdateUserDto } from './dto/update-user.dto';
+import * as bcrypt from 'bcrypt';
+@ApiTags("Users/auth")
 @Controller('auth')
 @UseInterceptors(ClassSerializerInterceptor)
 export class UserController {
@@ -15,6 +18,7 @@ export class UserController {
     private userService: UserService
   ) {
   }
+  
   @Post('register')
   @Roles('admin')
   @UseGuards(JwtAuthGuard, RoleGuard)
@@ -29,6 +33,41 @@ export class UserController {
     }
   }
 
+
+
+
+  @Put(':id')
+  // @Roles('admin','user')
+  // @UseGuards(JwtAuthGuard, RoleGuard)
+  async updateUser(
+    @User() userReq: UserEntity,
+    @Body() userData: UpdateUserDto,
+    @Param('id', ParseIntPipe) userId: number
+  ) {
+    try {
+      console.log('-*--*lmlmmm')
+      return await this.userService.updateUser(userId,userData,userReq);
+    } catch (error) {
+      console.log(error)
+      throw new InternalServerErrorException('Erreur lors de la modification de l\'utilisateur.', error.message);
+    }
+  }
+
+  @Get('confirm/:hashed')
+  @Render('confirm')
+  async getConfirm(@Param('hashed') hashedId: string)
+  {
+    try {
+      const decodedHashedId = decodeURIComponent(hashedId);
+      const splitHashedId = decodedHashedId.split('_');
+      const userId = splitHashedId[splitHashedId.length - 1];
+      return { userId };
+
+    } catch (error) {
+      // handle errors
+      return { error };
+    }
+  }
 
   @Post('login')
   async login(

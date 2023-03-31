@@ -1,5 +1,6 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { ApiTags } from '@nestjs/swagger';
 import { Roles } from 'src/decorators/roles.decorator';
 import { User } from 'src/decorators/user.decorator';
 import { UserEntity } from 'src/user/entities/user.entity';
@@ -9,6 +10,7 @@ import { BlocService } from './bloc.service';
 import { CreateBlocDto } from './dto/create-bloc.dto';
 import { UpdateBlocDto } from './dto/update-bloc.dto';
 
+@ApiTags('Blocs')
 @Controller('blocs')
 @UseGuards(JwtAuthGuard,RoleGuard)
 export class BlocController {

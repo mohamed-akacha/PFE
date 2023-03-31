@@ -8,11 +8,13 @@ import * as dotenv from 'dotenv';
 import { JwtStrategy } from './strategy/passport-jwt.strategy';
 import { UserEntity } from './entities/user.entity';
 import { RoleGuard } from './guards/rôles.guard';
+import { SendinblueModule } from 'src/sendinblue/sendinblue.module';
 
 
 dotenv.config();
 @Module({
   imports: [
+    SendinblueModule,
     TypeOrmModule.forFeature([UserEntity]),
     PassportModule.register({
       defaultStrategy: 'jwt'

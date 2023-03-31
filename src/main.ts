@@ -3,10 +3,14 @@ import { AppModule } from './app.module';
 import * as dotenv from 'dotenv';
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-
+import { SwaggerModule, DocumentBuilder, SwaggerDocumentOptions } from '@nestjs/swagger';
+import * as fs from 'fs';
+import * as yaml from 'yamljs';
+import { NestExpressApplication } from '@nestjs/platform-express';
+import { join } from 'path';
 dotenv.config();
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
   const configService = app.get(ConfigService);
    //validation pipe
   app.useGlobalPipes(new ValidationPipe({
@@ -20,6 +24,24 @@ async function bootstrap() {
       enableImplicitConversion: true
     }
   })); 
-  await app.listen(process.env.APP_PORT || 3000);
+  const config = new DocumentBuilder()
+    .setTitle('Inspections')
+    .setDescription('The inspection API description')
+    .setVersion('1.0')
+    .addTag('inspections')
+    .build();
+    const options: SwaggerDocumentOptions =  {
+      operationIdFactory: (
+        controllerKey: string,
+        methodKey: string
+      ) => methodKey
+    };
+  const document = SwaggerModule.createDocument(app, config, options);
+  fs.writeFileSync("./swagger.yaml", yaml.stringify(document));
+  SwaggerModule.setup('api', app, document);
+  app.useStaticAssets(join(__dirname, '..', 'public')); // serve static files from the public folder
+  app.setBaseViewsDir(join(__dirname, '..', 'views')); // set the base directory for templates
+  app.setViewEngine('hbs');
+  await app.listen(process.env.APP_PORT || 3000); 
 }
 bootstrap();

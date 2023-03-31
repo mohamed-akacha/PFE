@@ -1,4 +1,5 @@
 import { Body, ClassSerializerInterceptor, Controller, Delete, Get, NotFoundException, Param, ParseIntPipe, Post, Put, UnauthorizedException, UseGuards, UseInterceptors } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { Roles } from 'src/decorators/roles.decorator';
 import { User } from 'src/decorators/user.decorator';
 
@@ -10,6 +11,7 @@ import { UpdateEvaluationPointDto } from './dto/update-evaluation-point.dto';
 import { EvaluationPointEntity } from './entities/evaluation-point.entity';
 import { EvaluationPointService } from './evaluation-point.service';
 
+@ApiTags("Points d'evaluation")
 @Controller('evaluation-points')
 @UseInterceptors(ClassSerializerInterceptor)
 @UseGuards(JwtAuthGuard,RoleGuard)

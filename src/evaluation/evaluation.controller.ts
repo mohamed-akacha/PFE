@@ -12,7 +12,9 @@ import { CreateEvaluationDto } from './dto/create-evaluation.dto';
 import { EvaluationDataDto } from './dto/evaluation-data.dto';
 import { EvaluationEntity } from './entities/evaluation.entity';
 import { EvaluationService } from './evaluation.service';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Evaluations')
 @Controller('evaluations')
 @UseInterceptors(ClassSerializerInterceptor)
 @UseGuards(JwtAuthGuard, RoleGuard)

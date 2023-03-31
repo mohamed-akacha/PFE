@@ -19,6 +19,7 @@ import { InstitutionEntity } from './institution/entities/institution.entity';
 import { BlocEntity } from './bloc/entities/bloc.entity';
 import { AdminSeed } from './admin.seed';
 
+
 @Module({
   imports: [
     ConfigModule.forRoot({

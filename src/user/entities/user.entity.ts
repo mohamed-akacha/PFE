@@ -4,15 +4,16 @@ import { UserRoleEnum } from '../../enums/user-role.enum';
 import { Exclude } from 'class-transformer';
 import { InspectionEntity } from 'src/inspection/entites/inspection.entity';
 import { IsPhoneNumber } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 @Entity({name: 'user'})
 export class UserEntity extends TimestampEntites{
 
   @PrimaryGeneratedColumn()
   id: number;
-
+  @ApiProperty({ example: 1, description: 'The age of the Cat' })
   @Column({
-    unique: true
+    unique: true,nullable:true
   })
   username: string;
 
@@ -21,15 +22,15 @@ export class UserEntity extends TimestampEntites{
   })
   email: string;
 
-  @Column()
+  @Column({nullable:true})
   @IsPhoneNumber()
   tel: string;
   
-  @Column()
+  @Column({nullable:true})
   @Exclude()
   password: string;
 
-  @Column()
+  @Column({nullable:true})
   @Exclude()
   salt: string;
 

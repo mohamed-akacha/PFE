@@ -14,6 +14,7 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { Roles } from 'src/decorators/roles.decorator';
 import { User } from 'src/decorators/user.decorator';
 import { UserEntity } from 'src/user/entities/user.entity';
@@ -25,6 +26,7 @@ import { UpdateInspectionDto } from './dto/update-inspection.dto';
 import { InspectionEntity } from './entites/inspection.entity';
 import { InspectionService } from './inspection.service';
 
+@ApiTags("Inspections")
 @Controller('inspections')
 @UseInterceptors(ClassSerializerInterceptor)
 @UseGuards(JwtAuthGuard,RoleGuard)
