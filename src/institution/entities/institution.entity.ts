@@ -1,9 +1,9 @@
-import { TimestampEntites } from "src/generics/timestamp.entites.";
 import { InspectionUnitEntity } from "src/inspection-unit/entities/inspection-unit.entity";
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { ZoneEntity } from "src/zone/entities/zone.entity";
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany } from "typeorm";
 
 @Entity({ name: 'institution' })
-export class InstitutionEntity extends TimestampEntites {
+export class InstitutionEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -16,6 +16,8 @@ export class InstitutionEntity extends TimestampEntites {
   @Column()
   nature: string;
 
+  @ManyToOne(() => ZoneEntity, zone => zone.institutions)
+  zone: ZoneEntity;
   @OneToMany(() => InspectionUnitEntity, inspectionUnit => inspectionUnit.institution)
   inspectionUnits: InspectionUnitEntity[];
 }

@@ -42,6 +42,9 @@ export class UserService {
       throw new InternalServerErrorException(`Une erreur est survenue lors de la récupération des utilisateurs: ${error}`);
     }
   }
+
+
+  
   async createUser(userReq: UserEntity, userData: UserSubscribeDto): Promise<Partial<UserEntity>> {
 
     if (!this.isAdmin(userReq)) {
