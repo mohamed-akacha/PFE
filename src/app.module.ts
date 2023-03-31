@@ -18,6 +18,8 @@ import { BlocModule } from './bloc/bloc.module';
 import { InstitutionEntity } from './institution/entities/institution.entity';
 import { BlocEntity } from './bloc/entities/bloc.entity';
 import { AdminSeed } from './admin.seed';
+import { ZoneEntity } from './zone/entities/zone.entity';
+import { ZoneModule } from './zone/zone.module';
 
 
 @Module({
@@ -34,13 +36,13 @@ import { AdminSeed } from './admin.seed';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-    autoLoadEntities: true,
-      entities: [UserEntity,InspectionEntity,EvaluationPointEntity,
-        EvaluationEntity,InspectionUnitEntity,InstitutionEntity,BlocEntity],
+   // autoLoadEntities: true,
+      entities: [ UserEntity,InspectionEntity,EvaluationPointEntity,
+        EvaluationEntity,InspectionUnitEntity,InstitutionEntity,BlocEntity,ZoneEntity],
         
       //__dirname + '/**/*.entity{.ts,.js}'
-      synchronize: true,
-      debug: false
+     //synchronize: true,
+     // debug: false
     }),
     UserModule,
     InspectionModule,
@@ -49,6 +51,7 @@ import { AdminSeed } from './admin.seed';
     InspectionUnitModule,
     InstitutionModule,
     BlocModule,
+    ZoneModule
     ],
   controllers: [AppController],
   providers: [AppService,AdminSeed],

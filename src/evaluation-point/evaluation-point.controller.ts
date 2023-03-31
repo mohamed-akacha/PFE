@@ -21,7 +21,8 @@ export class EvaluationPointController {
   
   @Post()
   @Roles('admin')
-  async createEvaluationPoint(@User() user: UserEntity, @Body() addEvaluationPointDto: AddEvaluationPointDto): Promise<Partial<EvaluationPointEntity>> {
+  async createEvaluationPoint(@User() user: UserEntity,
+   @Body() addEvaluationPointDto: AddEvaluationPointDto): Promise<Partial<EvaluationPointEntity>> {
     try {
     return await this.evaluationPointService.createEvaluationPoint(user, addEvaluationPointDto);
   } catch (error) {

@@ -1,5 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, UseGuards } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
+import { Body, ClassSerializerInterceptor, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, UseGuards, UseInterceptors } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Roles } from 'src/decorators/roles.decorator';
 import { User } from 'src/decorators/user.decorator';
@@ -9,51 +8,55 @@ import { RoleGuard } from 'src/user/guards/rôles.guard';
 import { BlocService } from './bloc.service';
 import { CreateBlocDto } from './dto/create-bloc.dto';
 import { UpdateBlocDto } from './dto/update-bloc.dto';
+import { BlocEntity } from './entities/bloc.entity';
 
-@ApiTags('Blocs')
+@ApiTags('block')
 @Controller('blocs')
-@UseGuards(JwtAuthGuard,RoleGuard)
+@UseInterceptors(ClassSerializerInterceptor)
+@UseGuards(JwtAuthGuard, RoleGuard)
 export class BlocController {
-  constructor(private readonly blocService: BlocService) {}
+  constructor(private readonly blocService: BlocService) { }
 
   @Post()
   @Roles('admin')
-  async createBloc(@User() user: UserEntity, @Body() createBlocDto: CreateBlocDto) {
+  async createBloc(@User() user: UserEntity,
+    @Body() createBlocDto: CreateBlocDto): Promise<Partial<BlocEntity>> {
     try {
-      const bloc = await this.blocService.createBloc(user, createBlocDto);
-      return { bloc };
+      return await this.blocService.createBloc(user, createBlocDto);
+
     } catch (error) {
       throw error;
     }
   }
 
   @Get()
-  @Roles('admin','user')
-  async getAllBlocs() {
+  @Roles('admin', 'user')
+  async getAllBlocs(): Promise<BlocEntity[]> {
     try {
-      const blocs = await this.blocService.geAlltBlocs();
-      return { blocs };
+      return await this.blocService.getAlltBlocs();
+
     } catch (error) {
       throw error;
     }
   }
 
   @Get(':id')
-  @Roles('admin','user')
-  async getOneById(@Param('id', ParseIntPipe) id: number) {
+  @Roles('admin', 'user')
+  async getOneById(@Param('id', ParseIntPipe) id: number): Promise<BlocEntity> {
     try {
-      const bloc = await this.blocService.getOneById(id);
-      return { bloc };
+      return await this.blocService.getOneById(id);
+
     } catch (error) {
       throw error;
     }
   }
 
   @Get('/units/:unitId')
-  async getBlocksByUnit(@Param('unitId', ParseIntPipe) unitId: number) {
+  @Roles('admin', 'user')
+  async getBlocksByUnit(@Param('unitId', ParseIntPipe) unitId: number): Promise<BlocEntity[]> {
     try {
-      const blocs = await this.blocService.getBlocksByUnit(unitId);
-      return { blocs };
+      return await this.blocService.getBlocksByUnit(unitId);
+
     } catch (error) {
       throw error;
     }
@@ -64,30 +67,32 @@ export class BlocController {
     @Param('id', ParseIntPipe) id: number,
     @User() user: UserEntity,
     @Body() updateBlocDto: UpdateBlocDto,
-  ) {
+  ): Promise<Partial<BlocEntity>> {
     try {
-      const bloc = await this.blocService.updateBloc(id, updateBlocDto, user);
-      return { bloc };
+      return await this.blocService.updateBloc(id, updateBlocDto, user);
+
     } catch (error) {
       throw error;
     }
   }
 
   @Delete(':id')
-  async softDeleteBloc(@Param('id', ParseIntPipe) id: number, @User() user: UserEntity) {
+  async softDeleteBloc(@Param('id', ParseIntPipe) id: number,
+    @User() user: UserEntity): Promise<string> {
     try {
-      const message = await this.blocService.softDeleteBloc(user, id);
-      return { message };
+      return await this.blocService.softDeleteBloc(user, id);
+
     } catch (error) {
       throw error;
     }
   }
 
   @Patch('restore/:id')
-  async restoreBloc(@Param('id', ParseIntPipe) id: number, @User() user: UserEntity) {
+  async restoreBloc(@Param('id', ParseIntPipe) id: number,
+    @User() user: UserEntity): Promise<BlocEntity> {
     try {
-      const bloc = await this.blocService.restoreBloc(user, id);
-      return { bloc };
+      return await this.blocService.restoreBloc(user, id);
+
     } catch (error) {
       throw error;
     }
@@ -95,11 +100,14 @@ export class BlocController {
 
   @Delete('force/:id')
   @Roles('admin')
-  async deleteEvaluationPoint(@User() user: UserEntity, @Param('id', ParseIntPipe) blocId: number): Promise<string> {
+  async deleteBloc(@User() user: UserEntity,
+    @Param('id', ParseIntPipe) blocId: number): Promise<string> {
     try {
-    return await this.blocService.deleteBloc(user, blocId);
-  }   catch (error) {
-    throw error;
+      return await this.blocService.deleteBloc(user, blocId);
+    } catch (error) {
+      throw error;
+    }
   }
-  }
+
+
 }

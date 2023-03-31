@@ -1,7 +1,7 @@
 import { EvaluationEntity } from "src/evaluation/entities/evaluation.entity";
 import { TimestampEntites } from "src/generics/timestamp.entites.";
 import { InspectionUnitEntity } from "src/inspection-unit/entities/inspection-unit.entity";
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, JoinColumn } from "typeorm";
 
 @Entity({ name: 'bloc' })
 export class BlocEntity extends TimestampEntites{
@@ -18,6 +18,7 @@ export class BlocEntity extends TimestampEntites{
   etage: number;
 
   @ManyToOne(() => InspectionUnitEntity, inspectionUnit => inspectionUnit.blocs)
+  @JoinColumn({ name: "inspectionUnitId" })
   inspectionUnit: InspectionUnitEntity;
 
   @OneToMany(() => EvaluationEntity, evaluation => evaluation.bloc)

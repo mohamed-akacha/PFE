@@ -23,21 +23,29 @@ export class BlocService {
       throw new UnauthorizedException("Seuls les administrateurs sont autorisés à créer des Blocs ");
     }
     try {
-
       const newBloc = this.blocRepository.create({
-        ...createBlocDto
+        ...createBlocDto,
+        inspectionUnit:{id:createBlocDto.inspectionUnitId}
       });
-
       return await this.blocRepository.save(newBloc);
     } catch (error) {
-      throw new InternalServerErrorException("Une erreur est survenue lors de la création d'un point d'évaluation.", error.message);
+      if (error.code === 'ER_NO_REFERENCED_ROW_2') {
+        throw new NotFoundException("L'unité d'inspection n'existe pas.");
+      } else {
+        throw new InternalServerErrorException("Une erreur est survenue lors de la création d'un bloc.", error.message);
+      }
     }
+    
   }
 
-  async geAlltBlocs(): Promise<BlocEntity> {
-    const bloc = await this.blocRepository.createQueryBuilder('bloc')
-      .getOneOrFail();
-    return bloc;
+  async getAlltBlocs(): Promise<BlocEntity[]> {
+
+    try {
+      const queryBuilder =  this.blocRepository.createQueryBuilder('bloc');
+      return await queryBuilder.getMany();
+    } catch (error) {
+      throw new InternalServerErrorException("Une erreur est survenue lors de la récupération des bloc.", error.message);
+    }
   }
 
 
@@ -69,14 +77,26 @@ export class BlocService {
     const updatedBloc = await this.blocRepository.preload({
       id: idBloc,
       ...updateBlocDto,
+      inspectionUnit: {id:updateBlocDto.inspectionUnitId}
+      
     });
-
+ 
     if(! updatedBloc) {
       throw new NotFoundException(`Le bloc d'id ${idBloc} n'existe pas`);
     }
-    // Enregistrer l'entité mise à jour
-    return await this.blocRepository.save(updatedBloc);
+ 
+    try {
+      // Enregistrer l'entité mise à jour
+      return await this.blocRepository.save(updatedBloc);
+    } catch (error) {
+      if (error.code === 'ER_NO_REFERENCED_ROW_2') {
+        throw new NotFoundException("L'unité d'inspection n'existe pas.");
+      } else {
+        throw new InternalServerErrorException("Une erreur est survenue lors de la mise à jour du bloc.", error.message);
+      }
+    }
   }
+
 
   async getBlocksByUnit(unitId: number): Promise<BlocEntity[]> {
     return await this.blocRepository.find({
