@@ -1,4 +1,4 @@
-import { Body, ClassSerializerInterceptor, Controller, Get, Param, Post, UseGuards, UseInterceptors } from '@nestjs/common';
+import { BadRequestException, Body, ClassSerializerInterceptor, Controller, Get, InternalServerErrorException, Param, Post, UseGuards, UseInterceptors, UsePipes } from '@nestjs/common';
 import { BlocService } from 'src/bloc/bloc.service';
 import { Roles } from 'src/decorators/roles.decorator';
 import { User } from 'src/decorators/user.decorator';
@@ -13,6 +13,7 @@ import { EvaluationDataDto } from './dto/evaluation-data.dto';
 import { EvaluationEntity } from './entities/evaluation.entity';
 import { EvaluationService } from './evaluation.service';
 import { ApiTags } from '@nestjs/swagger';
+import { TypeORMError } from 'typeorm';
 
 @ApiTags('Evaluations')
 @Controller('evaluations')
@@ -41,39 +42,33 @@ export class EvaluationController {
     };
   }
 
-  @Post(':inspectionId')
-  @Roles('user')
-  async saveEvaluation(
-    @User() user: UserEntity,
-    @Param('inspectionId') inspectionId: number,
-    @Body(EvaluationDtoValidationPipe) evaluationDtos: CreateEvaluationDto[],
-  ): Promise<EvaluationEntity[]> {
-    // Récupérer tous les blocs et points d'évaluation nécessaires en une seule requête
-    const blocIds = evaluationDtos.map(evaluationDto => evaluationDto.blocId);
-    const evaluationPointIds = evaluationDtos.map(evaluationDto => evaluationDto.evaluationPointId);
-    const [blocs, evaluationPoints] = await Promise.all([
-      this.blocService.getBlocsByIds(blocIds),
-      this.evaluationPointService.getEvaluationPointsByIds(evaluationPointIds),
-    ]);
-
-    // Récupérer l'inspection à laquelle les évaluations doivent être liées
-    const inspection = await this.inspectionService.getInspectionById(user, inspectionId);
-
-    // Créer toutes les évaluations en une seule requête
-    const evaluations = evaluationDtos.map((evaluationDto, index) => {
-      const evaluation = new EvaluationEntity();
-      evaluation.score = evaluationDto.score;
-      evaluation.pieceJointe = evaluationDto.pieceJointe;
-      evaluation.bloc = blocs[index];
-      evaluation.inspection = inspection;
-      evaluation.evaluationPoint = evaluationPoints[index];
-      return evaluation;
-    });
-
-    return this.evaluationService.save(evaluations);
-
+  @Post()
+@Roles('user','admin')
+//@UsePipes()
+async saveEvaluation(
+  @Body(EvaluationDtoValidationPipe) evaluationDtos: CreateEvaluationDto[],
+): Promise<EvaluationEntity[]> {
+  try {
+    const evaluations = await Promise.all(
+      evaluationDtos.map((evaluationDto) =>
+        this.evaluationService.saveEvaluation(evaluationDto),
+      ),
+    );
+    return evaluations;
+  } catch (error) {
+     if (error.code === 'ER_NO_REFERENCED_ROW_2') {
+      throw new BadRequestException("L'ID fourni ne correspond à aucun enregistrement dans la base de données.");
+    } else if (error instanceof TypeORMError) {
+      throw new InternalServerErrorException('Une erreur s\'est produite lors de l\'enregistrement des évaluations.');
+    } else { 
+      throw error;
+    }
   }
-
+}
 
 
 }
+
+
+
+

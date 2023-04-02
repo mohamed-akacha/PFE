@@ -1,8 +1,9 @@
+import { Contrat } from "src/contrat/entities/contrat.entity";
 import { InspectionUnitEntity } from "src/inspection-unit/entities/inspection-unit.entity";
 import { ZoneEntity } from "src/zone/entities/zone.entity";
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany } from "typeorm";
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany, ManyToMany } from "typeorm";
 
-@Entity({ name: 'institution' })
+@Entity({ name: 'institutions' })
 export class InstitutionEntity {
   @PrimaryGeneratedColumn()
   id: number;
@@ -18,6 +19,11 @@ export class InstitutionEntity {
 
   @ManyToOne(() => ZoneEntity, zone => zone.institutions)
   zone: ZoneEntity;
-  @OneToMany(() => InspectionUnitEntity, inspectionUnit => inspectionUnit.institution)
+
+
+  @OneToMany(() => InspectionUnitEntity, inspectionUnit => inspectionUnit.institution ,{nullable: true, })
   inspectionUnits: InspectionUnitEntity[];
+
+  @OneToMany(() => Contrat, contrat => contrat.institution,{nullable: true, })
+  contrats: Contrat[];
 }

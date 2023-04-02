@@ -20,6 +20,10 @@ import { BlocEntity } from './bloc/entities/bloc.entity';
 import { AdminSeed } from './admin.seed';
 import { ZoneEntity } from './zone/entities/zone.entity';
 import { ZoneModule } from './zone/zone.module';
+import { SousTraitantModule } from './sous-traitant/sous-traitant.module';
+import { ContratModule } from './contrat/contrat.module';
+import { SousTraitantEntity } from './sous-traitant/entities/sous-traitant.entity';
+import { Contrat } from './contrat/entities/contrat.entity';
 
 
 @Module({
@@ -36,13 +40,13 @@ import { ZoneModule } from './zone/zone.module';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-   // autoLoadEntities: true,
+      autoLoadEntities: true,
       entities: [ UserEntity,InspectionEntity,EvaluationPointEntity,
-        EvaluationEntity,InspectionUnitEntity,InstitutionEntity,BlocEntity,ZoneEntity],
+        EvaluationEntity,InspectionUnitEntity,InstitutionEntity,BlocEntity,ZoneEntity,SousTraitantEntity,Contrat],
         
       //__dirname + '/**/*.entity{.ts,.js}'
      //synchronize: true,
-     // debug: false
+      debug: false
     }),
     UserModule,
     InspectionModule,
@@ -51,7 +55,9 @@ import { ZoneModule } from './zone/zone.module';
     InspectionUnitModule,
     InstitutionModule,
     BlocModule,
-    ZoneModule
+    ZoneModule,
+    SousTraitantModule,
+    ContratModule
     ],
   controllers: [AppController],
   providers: [AppService,AdminSeed],

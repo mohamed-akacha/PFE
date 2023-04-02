@@ -1,4 +1,4 @@
-import { IsNumber, IsString, IsOptional, IsNotEmpty, Max, Min } from 'class-validator';
+import { IsNumber, IsString, IsOptional, IsNotEmpty, Max, Min, ValidatePromise } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateEvaluationDto {
@@ -9,6 +9,7 @@ export class CreateEvaluationDto {
   })
   @IsNotEmpty()
   @IsNumber()
+  @ Min (1) 
   inspectionId: number;
 
   @ApiProperty({
@@ -18,6 +19,7 @@ export class CreateEvaluationDto {
   })
   @IsNotEmpty()
   @IsNumber()
+  @ Min (1) 
   blocId: number;
 
   @ApiProperty({
@@ -27,6 +29,7 @@ export class CreateEvaluationDto {
   })
   @IsNotEmpty()
   @IsNumber()
+  @ Min (1) 
   evaluationPointId: number;
 
   @ApiProperty({
@@ -36,8 +39,8 @@ export class CreateEvaluationDto {
   })
   @IsNotEmpty()
   @IsNumber()
-  @Min(0)
-  @Max(10)
+  @Min(0, { message: 'Le score doit être d\'au moins 0.' })
+  @Max(10, { message: 'Le score doit être inférieur ou égal à 10.' })
   score: number;
 
   @ApiProperty({

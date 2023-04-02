@@ -5,7 +5,7 @@ import { InspectionUnitEntity } from "src/inspection-unit/entities/inspection-un
 import { UserEntity } from "src/user/entities/user.entity";
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
-@Entity({name: 'inspection'})
+@Entity({name: 'inspections'})
 export class InspectionEntity extends TimestampEntites {
 
   @PrimaryGeneratedColumn()
