@@ -1,5 +1,5 @@
 import { Body, ClassSerializerInterceptor, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, UseGuards, UseInterceptors } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Roles } from 'src/decorators/roles.decorator';
 import { User } from 'src/decorators/user.decorator';
 import { UserEntity } from 'src/user/entities/user.entity';
@@ -11,6 +11,7 @@ import { InspectionUnitEntity } from './entities/inspection-unit.entity';
 import { InspectionUnitService } from './inspection-unit.service';
 
 @ApiTags('inspection-unit')
+@ApiBearerAuth()
 @Controller('inspection-units')
 @UseInterceptors(ClassSerializerInterceptor)
 @UseGuards(JwtAuthGuard, RoleGuard)

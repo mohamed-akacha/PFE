@@ -2,13 +2,12 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEmail, IsEnum, IsNotEmpty, IsOptional, IsPhoneNumber, IsString } from 'class-validator';
 import { UserRoleEnum } from 'src/enums/user-role.enum';
 
-export class UserSubscribeDto {
-  
+export class UserSubscribeDto {  
   @ApiProperty({
     description: 'The username of the user',
-    minLength: 4,
+    minLength: 8,
     maxLength: 20,
-    example: 'john_doe',
+    example: 'Mohamed Akacha',
   })
   @IsOptional()
   @IsString()

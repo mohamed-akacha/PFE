@@ -1,5 +1,5 @@
 import { Body, ClassSerializerInterceptor, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, UseGuards, UseInterceptors } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Roles } from 'src/decorators/roles.decorator';
 import { User } from 'src/decorators/user.decorator';
 import { UserEntity } from 'src/user/entities/user.entity';
@@ -11,13 +11,15 @@ import { UpdateBlocDto } from './dto/update-bloc.dto';
 import { BlocEntity } from './entities/bloc.entity';
 
 @ApiTags('block')
+@ApiBearerAuth()
 @Controller('blocs')
 @UseInterceptors(ClassSerializerInterceptor)
 @UseGuards(JwtAuthGuard, RoleGuard)
 export class BlocController {
   constructor(private readonly blocService: BlocService) { }
-
+  
   @Post()
+  @ApiOperation({ summary: 'Création d\'un bloc' })
   @Roles('admin')
   async createBloc(@User() user: UserEntity,
     @Body() createBlocDto: CreateBlocDto): Promise<Partial<BlocEntity>> {
@@ -30,6 +32,7 @@ export class BlocController {
   }
 
   @Get()
+  @ApiOperation({ summary: 'Récupérer tous les blocs' })
   @Roles('admin', 'user')
   async getAllBlocs(): Promise<BlocEntity[]> {
     try {
@@ -108,6 +111,5 @@ export class BlocController {
       throw error;
     }
   }
-
 
 }

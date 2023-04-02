@@ -14,7 +14,7 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Roles } from 'src/decorators/roles.decorator';
 import { User } from 'src/decorators/user.decorator';
 import { UserEntity } from 'src/user/entities/user.entity';
@@ -27,6 +27,7 @@ import { InspectionEntity } from './entites/inspection.entity';
 import { InspectionService } from './inspection.service';
 
 @ApiTags("Inspections")
+@ApiBearerAuth()
 @Controller('inspections')
 @UseInterceptors(ClassSerializerInterceptor)
 @UseGuards(JwtAuthGuard,RoleGuard)

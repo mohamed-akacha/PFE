@@ -20,6 +20,7 @@ import { BlocEntity } from './bloc/entities/bloc.entity';
 import { AdminSeed } from './admin.seed';
 import { ZoneEntity } from './zone/entities/zone.entity';
 import { ZoneModule } from './zone/zone.module';
+import { MailModule } from './mail/mail.module';
 
 
 @Module({
@@ -51,7 +52,8 @@ import { ZoneModule } from './zone/zone.module';
     InspectionUnitModule,
     InstitutionModule,
     BlocModule,
-    ZoneModule
+    ZoneModule,
+    MailModule
     ],
   controllers: [AppController],
   providers: [AppService,AdminSeed],

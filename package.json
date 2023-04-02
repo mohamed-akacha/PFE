@@ -20,6 +20,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@nestjs-modules/mailer": "^1.8.1",
     "@nestjs/common": "^9.0.0",
     "@nestjs/config": "^2.3.1",
     "@nestjs/core": "^9.0.0",
@@ -29,6 +30,7 @@
     "@nestjs/platform-express": "^9.0.0",
     "@nestjs/swagger": "^6.2.1",
     "@nestjs/typeorm": "^9.0.1",
+    "@types/p-retry": "^3.0.1",
     "@types/passport-jwt": "^3.0.8",
     "bcrypt": "^5.1.0",
     "class-transformer": "^0.5.1",
@@ -36,9 +38,11 @@
     "dotenv": "^16.0.3",
     "hbs": "^4.2.0",
     "mysql2": "^3.1.2",
+    "p-retry": "^5.1.2",
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.1",
     "reflect-metadata": "^0.1.13",
+    "retry": "^0.13.1",
     "rxjs": "^7.2.0",
     "sib-api-v3-sdk": "^8.5.0",
     "swagger-ui-express": "^4.6.2",

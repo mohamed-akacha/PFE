@@ -9,6 +9,9 @@ import { JwtStrategy } from './strategy/passport-jwt.strategy';
 import { UserEntity } from './entities/user.entity';
 import { RoleGuard } from './guards/rôles.guard';
 import { SendinblueModule } from 'src/sendinblue/sendinblue.module';
+import { MailModule } from 'src/mail/mail.module';
+import { AuthService } from './auth.service';
+import { AuthController } from './auth.controller';
 
 
 dotenv.config();
@@ -24,12 +27,13 @@ dotenv.config();
         signOptions: {
           expiresIn: 3600
         }
-      })
+      }),
+      MailModule
   ],
   controllers: [
-    UserController
+    UserController,AuthController
   ],
-  providers: [UserService, JwtStrategy,RoleGuard],
-  exports: [UserService]
+  providers: [UserService, JwtStrategy,RoleGuard,AuthService],
+  exports: [UserService,AuthService]
 })
 export class UserModule {}

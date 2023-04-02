@@ -6,11 +6,12 @@ import { Roles } from 'src/decorators/roles.decorator';
 import { User } from 'src/decorators/user.decorator';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { ZoneEntity } from './entities/zone.entity';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { RoleGuard } from 'src/user/guards/rôles.guard';
 import { JwtAuthGuard } from 'src/user/guards/jwt-auth.guard';
 
 @ApiTags('zones')
+@ApiBearerAuth()
 @Controller('zones')
 @UseInterceptors(ClassSerializerInterceptor)
 @UseGuards(JwtAuthGuard, RoleGuard)
