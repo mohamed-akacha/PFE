@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Register</title>
+  <style>
+  label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: bold;
+  }
+
+  input[type="text"],
+  input[type="password"],
+  input[type="tel"] {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 100%;
+    margin-bottom: 20px;
+    box-sizing: border-box;
+  }
+
+  input[type="submit"] {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  input[type="submit"]:hover {
+    background-color: #0056b3;
+  }
+
+  .loader {
+    border: 16px solid #f3f3f3;
+    border-top: 16px solid #007bff;
+    border-radius: 50%;
+    width: 120px;
+    height: 120px;
+    animation: spin 2s linear infinite;
+    margin: 0 auto;
+    display: none;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+</style>
+
+</head>
+<body>
+  <div class="loader"></div>
+<form id="register-form">
+  <label for="fullname">Full Name:</label>
+  <input type="text" id="fullname" name="fullname"><br><br>
+
+  <label for="password">Password:</label>
+  <input type="password" id="password" name="password"><br><br>
+
+  <label for="confirm-password">Confirm Password:</label>
+  <input type="password" id="confirm-password" name="confirm-password"><br><br>
+
+  <label for="telephone">Telephone:</label>
+  <input type="tel" id="telephone" name="telephone"><br><br>
+
+  <input type="submit" value="Register">
+</form>
+
+<script>
+  const form = document.querySelector('#register-form');
+const userId = '{{ userId }}';
+const loader = document.querySelector('.loader');
+
+form.addEventListener('submit', (event) => {
+  event.preventDefault(); // prevent form submission
+
+  // Get form data
+  const username = document.querySelector('#fullname').value;
+  const password = document.querySelector('#password').value;
+  const confirmPassword = document.querySelector('#confirm-password').value;
+  const tel = document.querySelector('#telephone').value;
+
+  // Validate form data
+  if (password !== confirmPassword) {
+    alert('Passwords do not match!');
+    return;
+  }
+
+  // Show loader animation
+  loader.style.display = 'block';
+
+  // Prepare request data
+  const data = {username, password, tel };
+
+  // Send request
+  fetch(`http://localhost:3000/auth/${userId}`, { // make a PUT request to the updateUser endpoint with the userId parameter
+    method: 'put',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(data)
+  })
+  .then(response => response.json())
+  .then(data => {
+    console.log(data);
+    alert('Registration successful!');
+    loader.style.display = 'none'; // Hide loader animation
+  })
+  .catch(error => {
+    console.error(error);
+    alert('Registration failed!');
+    loader.style.display = 'none'; // Hide loader animation
+  });
+});
+
+</script>
+</body>
+</html>
