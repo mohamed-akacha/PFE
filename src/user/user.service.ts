@@ -8,7 +8,6 @@ import { JwtService } from '@nestjs/jwt';
 import { UserRoleEnum } from '../enums/user-role.enum';
 import { UserEntity } from './entities/user.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { SendinblueService } from '../sendinblue/sendinblue.service';
 import { promises as fs } from 'fs';
 import { isAdmin, isOwner } from './shared.utils'
 import { MailService } from "src/mail/mail.service";

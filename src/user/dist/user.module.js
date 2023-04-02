@@ -17,7 +17,6 @@ var dotenv = require("dotenv");
 var passport_jwt_strategy_1 = require("./strategy/passport-jwt.strategy");
 var user_entity_1 = require("./entities/user.entity");
 var r_les_guard_1 = require("./guards/r\u00F4les.guard");
-var sendinblue_module_1 = require("src/sendinblue/sendinblue.module");
 var mail_module_1 = require("src/mail/mail.module");
 var auth_service_1 = require("./auth.service");
 var auth_controller_1 = require("./auth.controller");
@@ -28,7 +27,6 @@ var UserModule = /** @class */ (function () {
     UserModule = __decorate([
         common_1.Module({
             imports: [
-                sendinblue_module_1.SendinblueModule,
                 typeorm_1.TypeOrmModule.forFeature([user_entity_1.UserEntity]),
                 passport_1.PassportModule.register({
                     defaultStrategy: 'jwt'
