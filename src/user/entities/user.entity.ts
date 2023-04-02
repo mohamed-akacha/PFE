@@ -6,7 +6,7 @@ import { InspectionEntity } from 'src/inspection/entites/inspection.entity';
 import { IsPhoneNumber } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
-@Entity({name: 'user'})
+@Entity({name: 'users'})
 export class UserEntity extends TimestampEntites{
 
   @PrimaryGeneratedColumn()

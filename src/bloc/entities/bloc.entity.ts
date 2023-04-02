@@ -3,7 +3,7 @@ import { TimestampEntites } from "src/generics/timestamp.entites.";
 import { InspectionUnitEntity } from "src/inspection-unit/entities/inspection-unit.entity";
 import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, JoinColumn } from "typeorm";
 
-@Entity({ name: 'bloc' })
+@Entity({ name: 'blocs' })
 export class BlocEntity extends TimestampEntites{
   @PrimaryGeneratedColumn()
   id: number;
