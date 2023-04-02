@@ -52,8 +52,8 @@ var user_decorator_1 = require("src/decorators/user.decorator");
 var evaluation_dto_validation_pipe_1 = require("src/pipes/evaluation-dto-validation.pipe");
 var jwt_auth_guard_1 = require("src/user/guards/jwt-auth.guard");
 var r_les_guard_1 = require("src/user/guards/r\u00F4les.guard");
-var evaluation_entity_1 = require("./entities/evaluation.entity");
 var swagger_1 = require("@nestjs/swagger");
+var typeorm_1 = require("typeorm");
 var EvaluationController = /** @class */ (function () {
     function EvaluationController(inspectionService, blocService, evaluationPointService, evaluationService) {
         this.inspectionService = inspectionService;
@@ -84,33 +84,33 @@ var EvaluationController = /** @class */ (function () {
             });
         });
     };
-    EvaluationController.prototype.saveEvaluation = function (user, inspectionId, evaluationDtos) {
+    EvaluationController.prototype.saveEvaluation = function (evaluationDtos) {
         return __awaiter(this, void 0, Promise, function () {
-            var blocIds, evaluationPointIds, _a, blocs, evaluationPoints, inspection, evaluations;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
+            var evaluations, error_1;
+            var _this = this;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
                     case 0:
-                        blocIds = evaluationDtos.map(function (evaluationDto) { return evaluationDto.blocId; });
-                        evaluationPointIds = evaluationDtos.map(function (evaluationDto) { return evaluationDto.evaluationPointId; });
-                        return [4 /*yield*/, Promise.all([
-                                this.blocService.getBlocsByIds(blocIds),
-                                this.evaluationPointService.getEvaluationPointsByIds(evaluationPointIds),
-                            ])];
+                        _a.trys.push([0, 2, , 3]);
+                        return [4 /*yield*/, Promise.all(evaluationDtos.map(function (evaluationDto) {
+                                return _this.evaluationService.saveEvaluation(evaluationDto);
+                            }))];
                     case 1:
-                        _a = _b.sent(), blocs = _a[0], evaluationPoints = _a[1];
-                        return [4 /*yield*/, this.inspectionService.getInspectionById(user, inspectionId)];
+                        evaluations = _a.sent();
+                        return [2 /*return*/, evaluations];
                     case 2:
-                        inspection = _b.sent();
-                        evaluations = evaluationDtos.map(function (evaluationDto, index) {
-                            var evaluation = new evaluation_entity_1.EvaluationEntity();
-                            evaluation.score = evaluationDto.score;
-                            evaluation.pieceJointe = evaluationDto.pieceJointe;
-                            evaluation.bloc = blocs[index];
-                            evaluation.inspection = inspection;
-                            evaluation.evaluationPoint = evaluationPoints[index];
-                            return evaluation;
-                        });
-                        return [2 /*return*/, this.evaluationService.save(evaluations)];
+                        error_1 = _a.sent();
+                        if (error_1.code === 'ER_NO_REFERENCED_ROW_2') {
+                            throw new common_1.BadRequestException("L'ID fourni ne correspond à aucun enregistrement dans la base de données.");
+                        }
+                        else if (error_1 instanceof typeorm_1.TypeORMError) {
+                            throw new common_1.InternalServerErrorException('Une erreur s\'est produite lors de l\'enregistrement des évaluations.');
+                        }
+                        else {
+                            throw error_1;
+                        }
+                        return [3 /*break*/, 3];
+                    case 3: return [2 /*return*/];
                 }
             });
         });
@@ -122,11 +122,9 @@ var EvaluationController = /** @class */ (function () {
         __param(1, common_1.Param('inspectionId'))
     ], EvaluationController.prototype, "getEvaluationData");
     __decorate([
-        common_1.Post(':inspectionId'),
-        roles_decorator_1.Roles('user'),
-        __param(0, user_decorator_1.User()),
-        __param(1, common_1.Param('inspectionId')),
-        __param(2, common_1.Body(evaluation_dto_validation_pipe_1.EvaluationDtoValidationPipe))
+        common_1.Post(),
+        roles_decorator_1.Roles('user', 'admin'),
+        __param(0, common_1.Body(evaluation_dto_validation_pipe_1.EvaluationDtoValidationPipe))
     ], EvaluationController.prototype, "saveEvaluation");
     EvaluationController = __decorate([
         swagger_1.ApiTags('Evaluations'),

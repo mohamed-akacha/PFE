@@ -64,10 +64,8 @@ var user_entity_1 = require("./entities/user.entity");
 var shared_utils_1 = require("./shared.utils");
 var UserService = /** @class */ (function () {
     //constructor
-    function UserService(userRepository, jwtService, mailService) {
+    function UserService(userRepository) {
         this.userRepository = userRepository;
-        this.jwtService = jwtService;
-        this.mailService = mailService;
     }
     //create first admin account
     UserService.prototype.seedUser = function (userData) {
