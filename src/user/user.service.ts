@@ -8,13 +8,12 @@ import { JwtService } from '@nestjs/jwt';
 import { UserRoleEnum } from '../enums/user-role.enum';
 import { UserEntity } from './entities/user.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { SendinblueService } from '../sendinblue/sendinblue.service';
 import { promises as fs } from 'fs';
 @Injectable()
 export class UserService {
   private emailTemplate: string;
   constructor( @InjectRepository(UserEntity) private userRepository: Repository<UserEntity>,
-               private jwtService: JwtService, private readonly sendinblueService: SendinblueService,) 
+               private jwtService: JwtService, ) 
     {
       this.loadEmailTemplate();
     }
@@ -73,13 +72,7 @@ export class UserService {
       const newUrl = `http://localhost:3000/auth/confirm/${encodedHash_userId}`;
       console.log(newUrl);
       const emailContent = await this.emailTemplate.split(oldUrl).join(newUrl);
-      // Send email to the savedUser's email
-      await this.sendinblueService.sendEmail(
-        savedUser.email,
-        "New user",
-        "Account confirmation",
-        emailContent
-      );
+      
     } 
     catch (e) {
       console.log(e.message);
