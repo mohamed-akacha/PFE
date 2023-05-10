@@ -34,6 +34,10 @@ export class UserEntity extends TimestampEntites{
   @Exclude()
   salt: string;
 
+  @Column({nullable:true})
+  @Exclude()
+  verifyCode: string;
+
   @Column({
     type: 'enum', enum: UserRoleEnum,
     default: UserRoleEnum.USER

@@ -3,7 +3,7 @@ import { BlocEntity } from "src/bloc/entities/bloc.entity";
 import { EvaluationPointEntity } from "src/evaluation-point/entities/evaluation-point.entity";
 import { TimestampEntites } from "src/generics/timestamp.entites.";
 import { InspectionEntity } from "src/inspection/entites/inspection.entity";
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity({name: 'evaluations'})
 export class EvaluationEntity extends TimestampEntites {
@@ -18,17 +18,31 @@ export class EvaluationEntity extends TimestampEntites {
 
   @Column({ nullable: true })
   pieceJointe?: string;
-/* 
-  @Column({ nullable: true })
-  commentaire:String */
 
+
+  @Column()
+  inspectionId: number;
   @ManyToOne(() => InspectionEntity, inspection => inspection.evaluations)
+  @JoinColumn({ name: 'inspectionId' })
   inspection: InspectionEntity;
 
-  @ManyToOne(() => EvaluationPointEntity, evaluationPoint => evaluationPoint.evaluations)
+
+
+
+  @Column()
+  evaluationPointId: number;
+  @ManyToOne(() => EvaluationPointEntity)
+  @JoinColumn({ name: 'evaluationPointId' })
   evaluationPoint: EvaluationPointEntity;
 
-  @ManyToOne(() => BlocEntity, bloc => bloc.evaluations, { onUpdate: 'CASCADE' })
-  bloc: BlocEntity;
+ 
 
+
+  @Column()
+  blocId: number;
+  @ManyToOne(() => EvaluationEntity,{ onUpdate: 'CASCADE' })
+  @JoinColumn({ name: 'blocId' })
+  bloc: BlocEntity;
 }
+
+

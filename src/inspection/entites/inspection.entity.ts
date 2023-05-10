@@ -32,10 +32,15 @@ export class InspectionEntity extends TimestampEntites {
   @OneToMany(() => EvaluationEntity, evaluation => evaluation.inspection ,{ nullable: true })
   evaluations: EvaluationEntity[];
 
-  @ManyToOne(() => InspectionUnitEntity, { nullable: true })
-  @JoinColumn()
+ 
+
+  @Column()
+  unitId: number;
+  @ManyToOne(() => InspectionEntity)
+  @JoinColumn({ name: 'unitId' })
   unit: InspectionUnitEntity;
-
-
-
 }
+
+
+
+

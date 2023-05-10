@@ -41,11 +41,12 @@ import { Contrat } from './contrat/entities/contrat.entity';
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
       autoLoadEntities: true,
-      entities: [ UserEntity,InspectionEntity,EvaluationPointEntity,
-        EvaluationEntity,InspectionUnitEntity,InstitutionEntity,BlocEntity,ZoneEntity,SousTraitantEntity,Contrat],
-        
+      entities: ["dist/**/*.entity{.ts,.js}"],
+      /* UserEntity,InspectionEntity,EvaluationPointEntity,
+      EvaluationEntity,InspectionUnitEntity,InstitutionEntity,
+      BlocEntity,ZoneEntity,SousTraitantEntity,Contrat */
       //__dirname + '/**/*.entity{.ts,.js}'
-     synchronize: true,
+     //synchronize: true,
       debug: false
     }),
     UserModule,

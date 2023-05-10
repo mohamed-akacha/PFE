@@ -17,7 +17,9 @@ export class BlocEntity extends TimestampEntites{
   @Column()
   etage: number;
 
-  @ManyToOne(() => InspectionUnitEntity, inspectionUnit => inspectionUnit.blocs)
+  @Column({ nullable: true })
+  inspectionUnitId: number;
+  @ManyToOne(() => InspectionUnitEntity)
   @JoinColumn({ name: "inspectionUnitId" })
   inspectionUnit: InspectionUnitEntity;
 

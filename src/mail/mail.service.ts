@@ -40,5 +40,23 @@ export class MailService {
     }
     
   }
+
+  async sendConfirmationCodeEmail(to: string, code: string): Promise<{ success: boolean, message?: string }> {
+   //console.log(to,code);
+    try {
+      await this.mailerService.sendMail({
+        
+        to: to,
+        subject: 'Confirmation Code',
+        text: `Your confirmation code is ${code}`,
+      });
+      return { success: true };
+    } catch (error) {
+      console.error(error);
+      return { success: false, message: 'Failed to send confirmation code email' };
+    }
+  }
+
+
 }
 

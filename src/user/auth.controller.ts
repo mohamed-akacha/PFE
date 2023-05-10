@@ -1,4 +1,4 @@
-import { Controller, UseInterceptors, ClassSerializerInterceptor, Body, HttpException, HttpStatus, Post, Get, Param, Render, InternalServerErrorException, UseGuards, ParseIntPipe, Put } from "@nestjs/common";
+import { Controller, UseInterceptors, ClassSerializerInterceptor, Body, HttpException, HttpStatus, Post, Get, Param, Render, InternalServerErrorException, UseGuards, ParseIntPipe, Put, Patch } from "@nestjs/common";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { Roles } from "src/decorators/roles.decorator";
 import { User } from "src/decorators/user.decorator";
@@ -9,6 +9,8 @@ import { UpdateUserDto } from "./dto/update-user.dto";
 import { UserEntity } from "./entities/user.entity";
 import { JwtAuthGuard } from "./guards/jwt-auth.guard";
 import { RoleGuard } from "./guards/rôles.guard";
+import { ResetPasswordDto } from "./dto/reset-password.dto";
+import { VerityEmailCodeDto } from "./dto/verify-email-code.dto";
 
 @ApiTags("Auth")
 @ApiBearerAuth()
@@ -17,7 +19,7 @@ import { RoleGuard } from "./guards/rôles.guard";
 export class AuthController {
     constructor
         (private authService: AuthService) { }
-    
+
     //creation
     @Post('register')
     @Roles('admin')
@@ -27,11 +29,11 @@ export class AuthController {
         @Body() userData: UserRSubscribeDto
     ) {
         try {
-        return await this.authService.createUser(userReq, userData);
+            return await this.authService.createUser(userReq, userData);
         } catch (error) {
-        throw new InternalServerErrorException('Erreur lors de la création de l\'utilisateur.', error.message);
+            throw new InternalServerErrorException('Erreur lors de la création de l\'utilisateur.', error.message);
         }
-    }    
+    }
     //Login endpoint
     @Post('login')
     async login(@Body() credentials: LoginCredentialsDto) {
@@ -44,13 +46,13 @@ export class AuthController {
     }
     //confirmation d'un compte
     @Put(':id')
-    async confirmAccount(@User() userReq: UserEntity,@Body() userData: UpdateUserDto,
-        @Param('id', ParseIntPipe) userId: number){
+    async confirmAccount(@User() userReq: UserEntity, @Body() userData: UpdateUserDto,
+        @Param('id', ParseIntPipe) userId: number) {
         try {
-        return await this.authService.confirmAccount(userId, userData);
+            return await this.authService.confirmAccount(userId, userData);
         } catch (error) {
-        console.log(error)
-        throw new InternalServerErrorException('Erreur lors de la modification de l\'utilisateur.', error.message);
+            console.log(error)
+            throw new InternalServerErrorException('Erreur lors de la modification de l\'utilisateur.', error.message);
         }
     }
     //Ouverture de la page de confirmation d'un compte
@@ -63,9 +65,41 @@ export class AuthController {
             const userId = splitHashedId[splitHashedId.length - 1];
             //envoi du user id vers la page confirmation.hbs
             return { userId };
-        } 
+        }
         catch (error) {
             return { error };
         }
     }
+
+
+    // Vérification d'email et envoi de code
+    @Post('verify-email')
+    async sendVerificationCode(
+        @Body() data: { email: string }
+    ): Promise<{ success: boolean, message?: string }> {
+        return await this.authService.sendVerificationCode(data.email);
+    }
+
+    //Vérification de code
+    @Post('verify-email-code')
+    async verifyEmailCode(
+        @Body() verifyEmailCode: VerityEmailCodeDto
+    ): Promise<{success: boolean; message?: string;}> {
+        const { email, verifycode } = verifyEmailCode;
+        return await this.authService.verifyEmailCode(email, verifycode);
+    }
+
+    @Post('reset-password')
+    async resetPassword(
+        @Body() resetPasswordDto: ResetPasswordDto,
+    ): Promise<{ success: boolean, message?: string }> {
+        // console.log(resetPasswordDto.newPassword)
+        const { email, newPassword } = resetPasswordDto;
+        return await this.authService.changePassword(email, newPassword);
+
+    }
+
+
+
+
 }

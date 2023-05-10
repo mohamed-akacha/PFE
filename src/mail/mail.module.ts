@@ -18,13 +18,13 @@ import { MailService } from './mail.service';
             defaults: {
               from: 'contact.pfesante@gmail.com',
             },
-            template: {
-              dir: __dirname + '/templates',
-              adapter: new HandlebarsAdapter(),
-              options: {
-                strict: true,
-              },
-            },
+            // template: {
+            //   dir: __dirname + '/templates',
+            //   adapter: new HandlebarsAdapter(),
+            //   options: {
+            //     strict: true,
+            //   },
+            // },
           }),
     ],
     providers: [MailService],
