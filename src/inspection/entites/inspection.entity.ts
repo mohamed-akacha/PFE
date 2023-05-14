@@ -36,7 +36,7 @@ export class InspectionEntity extends TimestampEntites {
 
   @Column()
   unitId: number;
-  @ManyToOne(() => InspectionEntity)
+  @ManyToOne(() => InspectionUnitEntity,{nullable: true, })
   @JoinColumn({ name: 'unitId' })
   unit: InspectionUnitEntity;
 }

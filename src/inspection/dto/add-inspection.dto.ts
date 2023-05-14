@@ -47,5 +47,5 @@ export class AddInspectionDto {
   })
   @IsInt()
   @IsOptional()
-  unitId?: number;
+  unitId: number;
 }

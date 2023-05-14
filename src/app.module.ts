@@ -46,7 +46,7 @@ import { Contrat } from './contrat/entities/contrat.entity';
       EvaluationEntity,InspectionUnitEntity,InstitutionEntity,
       BlocEntity,ZoneEntity,SousTraitantEntity,Contrat */
       //__dirname + '/**/*.entity{.ts,.js}'
-     //synchronize: true,
+   //  synchronize: true,
       debug: false
     }),
     UserModule,

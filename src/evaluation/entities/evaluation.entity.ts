@@ -40,7 +40,7 @@ export class EvaluationEntity extends TimestampEntites {
 
   @Column()
   blocId: number;
-  @ManyToOne(() => EvaluationEntity,{ onUpdate: 'CASCADE' })
+  @ManyToOne(() => BlocEntity,{ onUpdate: 'CASCADE' })
   @JoinColumn({ name: 'blocId' })
   bloc: BlocEntity;
 }
