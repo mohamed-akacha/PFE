@@ -62,7 +62,8 @@ export class InspectionService {
   async getAllInspections(userReq: UserEntity): Promise<InspectionEntity[]> {
     const queryBuilder = this.inspectionRepository.createQueryBuilder("inspection");
     queryBuilder.leftJoinAndSelect("inspection.user", "user")
-      .leftJoinAndSelect("inspection.unit", "unit");
+      .leftJoinAndSelect("inspection.unit", "unit")
+      .leftJoinAndSelect('unit.institution','institution');
 
     if (!this.userService.isAdmin(userReq)) {
       queryBuilder.where("user.id = :userId", { userId: userReq.id });
@@ -77,6 +78,7 @@ export class InspectionService {
     const inspection = await this.inspectionRepository.createQueryBuilder("inspection")
       .leftJoinAndSelect("inspection.user", "user")
       .leftJoinAndSelect("inspection.unit", "unit")
+      .leftJoinAndSelect('unit.institution','institution')
       .where("inspection.id = :inspectionId", { inspectionId })
       .getOne();
 

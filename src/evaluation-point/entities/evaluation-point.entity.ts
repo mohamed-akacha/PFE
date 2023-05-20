@@ -18,7 +18,5 @@ export class EvaluationPointEntity extends TimestampEntites {
   @OneToMany(() => EvaluationEntity, evaluation => evaluation.evaluationPoint,{ nullable: true })
   evaluations: EvaluationEntity[];
 
-  @Column({ nullable: true })
-  evaluationPointId: number;
 
 }
