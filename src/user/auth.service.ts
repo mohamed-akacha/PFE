@@ -11,6 +11,7 @@ import { UpdateUserDto } from "./dto/update-user.dto";
 import { UserService } from "./user.service";
 import { UserRSubscribeDto } from "./dto/real-user-create.dto";
 import { randomInt } from "crypto";
+import { NotificationService } from "src/notification/notification.service";
 @Injectable()
 export class AuthService {
     //constructor
@@ -18,31 +19,41 @@ export class AuthService {
     private userRepository: Repository<UserEntity>,
         private jwtService: JwtService,
         private readonly mailService: MailService,
-        private readonly userService: UserService) { }
+        private readonly userService: UserService,
+        private readonly notificationService: NotificationService,) { }
     //authentification
     async login(credentials: LoginCredentialsDto) {
-        // Récupére le login et le mot de passe
-        const { email, password } = credentials;
+        // Récupére le login, le mot de passe, et le token de device
+        const { email, password, deviceToken } = credentials;
         const user = await this.userRepository
-            .createQueryBuilder("user")
-            .where("user.email = :email", { email })
-            .getOne();
-        if (!user)
-            throw new NotFoundException('Compte inexistant.');
+          .createQueryBuilder("user")
+          .where("user.email = :email", { email })
+          .getOne();
+          
+        if (!user) {
+          throw new NotFoundException('Compte inexistant.');
+        }
+    
         const hashedPassword = await bcrypt.hash(password, user.salt);
         if (hashedPassword === user.password) {
-            const payload = {
-                username: user.username,
-                email: user.email,
-                role: user.role
-            };
-            const jwt = this.jwtService.sign(payload);
-            return { "access_token": jwt };
+          const payload = {
+            id : user.id,
+            username: user.username,
+            email: user.email,
+            role: user.role,
+          };
+          const jwt = this.jwtService.sign(payload);
+    
+          // Ajoute le token de device à la base de données
+          if (deviceToken) {
+            await this.notificationService.addDeviceToken(user.id, deviceToken);
+            //console.log("++++++++++++++ deviceToken :",deviceToken);
+          }
+          return { "access_token": jwt };
+        } else {
+          throw new NotFoundException('Mot de passe incorrect.');
         }
-        else {
-            throw new NotFoundException('Mot de passe incorrect.');
-        }
-    }
+      }
     //Creation d'un utilisateur
     async createUser(userReq: UserEntity, userData: UserRSubscribeDto)
         : Promise<any> {

@@ -1,10 +1,11 @@
 import { Contrat } from "src/contrat/entities/contrat.entity";
+import { TimestampEntites } from "src/generics/timestamp.entites.";
 import { InspectionUnitEntity } from "src/inspection-unit/entities/inspection-unit.entity";
 import { ZoneEntity } from "src/zone/entities/zone.entity";
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, OneToMany, ManyToMany } from "typeorm";
 
 @Entity({ name: 'institutions' })
-export class InstitutionEntity {
+export class InstitutionEntity extends TimestampEntites{
   @PrimaryGeneratedColumn()
   id: number;
 

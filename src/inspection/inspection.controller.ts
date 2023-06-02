@@ -44,7 +44,7 @@ export class InspectionController {
     @Body() inspectionDto: AddInspectionDto,
   ) : Promise<Partial<InspectionEntity>>{
     try {
-      console.log(inspectionDto);
+      
       return await this.inspectionService.createInspection(user, inspectionDto);
     } catch (error) {
       if (error instanceof UnauthorizedException) {

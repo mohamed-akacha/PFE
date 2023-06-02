@@ -3,12 +3,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, Repository, TypeORMError } from 'typeorm';
 import { EvaluationEntity } from './entities/evaluation.entity';
 import { CreateEvaluationDto } from './dto/create-evaluation.dto';
+import { InspectionService } from 'src/inspection/inspection.service';
 
 @Injectable()
 export class EvaluationService {
   constructor(
     @InjectRepository(EvaluationEntity)
     private readonly evaluationRepository: Repository<EvaluationEntity>,
+    
   ) {}
 
 

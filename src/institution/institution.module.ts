@@ -22,7 +22,8 @@ import { JwtAuthGuard } from 'src/user/guards/jwt-auth.guard';
           expiresIn: 3600
         }
       }),
-      UserModule
+      UserModule,
+      
   ],
   controllers: [InstitutionController],
   providers: [InstitutionService, RoleGuard ,JwtAuthGuard],

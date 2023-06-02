@@ -8,6 +8,8 @@ import { Repository } from 'typeorm';
 import { AddInspectionDto } from './dto/add-inspection.dto';
 import { UpdateInspectionDto } from './dto/update-inspection.dto';
 import { InspectionEntity } from './entites/inspection.entity';
+import { NotificationService } from 'src/notification/notification.service';
+import { format } from 'date-fns'
 
 @Injectable()
 export class InspectionService {
@@ -15,7 +17,8 @@ export class InspectionService {
     @InjectRepository(InspectionEntity)
     private inspectionRepository: Repository<InspectionEntity>,
     private userService: UserService,
-    private inspectionUnitService: InspectionUnitService
+    private inspectionUnitService: InspectionUnitService,
+    private notificationService: NotificationService
   ) { }
 
 
@@ -46,14 +49,26 @@ export class InspectionService {
     }
 
     // Créer une nouvelle inspection avec la description, la date prévue, le type et l'utilisateur
-    return await this.inspectionRepository.save({
+    const inspection = await this.inspectionRepository.save({
       description,
       datePrevue,
       type,
       user: inspecteur ? inspecteur : null,
       unit: unit ? unit : null
     });
+
+    // Send notification to the inspector
+    if (inspecteur) {
+      const formattedDate = format(datePrevue, 'dd-MM-yyyy');
+      const title = "New inspection assigned to you";
+      const body = `New inspection assigned to you on ${formattedDate}`;
+    
+      await this.notificationService.sendToUser(inspecteur.id, title, body, inspection.id);
+    }
+
+    return inspection;
   }
+
 
 
 
@@ -63,7 +78,7 @@ export class InspectionService {
     const queryBuilder = this.inspectionRepository.createQueryBuilder("inspection");
     queryBuilder.leftJoinAndSelect("inspection.user", "user")
       .leftJoinAndSelect("inspection.unit", "unit")
-      .leftJoinAndSelect('unit.institution','institution');
+      .leftJoinAndSelect('unit.institution', 'institution');
 
     if (!this.userService.isAdmin(userReq)) {
       queryBuilder.where("user.id = :userId", { userId: userReq.id });
@@ -78,7 +93,7 @@ export class InspectionService {
     const inspection = await this.inspectionRepository.createQueryBuilder("inspection")
       .leftJoinAndSelect("inspection.user", "user")
       .leftJoinAndSelect("inspection.unit", "unit")
-      .leftJoinAndSelect('unit.institution','institution')
+      .leftJoinAndSelect('unit.institution', 'institution')
       .where("inspection.id = :inspectionId", { inspectionId })
       .getOne();
 
@@ -118,6 +133,12 @@ export class InspectionService {
 
       // Assigner l'inspecteur à l'inspection
       inspection.user = inspecteur;
+      // Envoyer une notification à l'inspecteur pour l'informer de la mise à jour de l'inspection
+      const formattedDate = format(inspection.datePrevue, 'dd-MM-yyyy');
+      const title = 'Inspection updated';
+      const body = `An inspection assigned to you has been updated on ${formattedDate}`;
+  
+      await this.notificationService.sendToUser(inspecteur.id, title, body,inspection.id);
     }
 
     // Si le champ unitId est présent dans l'objet updateInspectionDto, récupérer l'unité correspondante à l'ID fourni
@@ -172,11 +193,11 @@ export class InspectionService {
     if (!this.userService.isAdmin(user)) {
       throw new UnauthorizedException('Vous n\'êtes pas autorisé à effectuer cette action.');
     }
-   /*  // Récupérer l'inspection spécifique en utilisant son ID
-    const inspection = await this.getInspectionById(user, inspectionId);
-    if (!inspection) {
-      throw new NotFoundException('Inspection introuvable.');
-    } */
+    /*  // Récupérer l'inspection spécifique en utilisant son ID
+     const inspection = await this.getInspectionById(user, inspectionId);
+     if (!inspection) {
+       throw new NotFoundException('Inspection introuvable.');
+     } */
     // Marquer l'inspection comme "supprimée" en la soft-deletant
     const result = await this.inspectionRepository.softDelete({ id: inspectionId });
     // Vérifier si l'inspection a été supprimé

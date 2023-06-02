@@ -10,6 +10,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from 'src/user/strategy/passport-jwt.strategy';
 import { RoleGuard } from 'src/user/guards/rôles.guard';
 import { InspectionUnitModule } from 'src/inspection-unit/inspection-unit.module';
+import { NotificationModule } from 'src/notification/notification.module';
 
 @Module({
   imports:[
@@ -23,7 +24,7 @@ import { InspectionUnitModule } from 'src/inspection-unit/inspection-unit.module
           expiresIn: 3600
         }
       }),
-    UserModule,InspectionUnitModule
+    UserModule,InspectionUnitModule,NotificationModule
   ],
   controllers: [InspectionController],
   providers: [InspectionService, JwtStrategy, RoleGuard],

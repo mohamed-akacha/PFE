@@ -150,17 +150,10 @@ export class UserService {
     return `L'utilisateur a été supprimée définitivement avec succès.`;
   }
 
-  /**
-   Ces méthodes sont utilisées pour vérifier si l'utilisateur actuel possède certains privilèges 
-   ou statut de propriétaire.
-   isAdmin détermine si l'utilisateur a des privilèges administratifs, tandis que isOwner vérifie si
-   l'utilisateur est le propriétaire d'une ressource spécifique. Ces méthodes sont conçues pour être utilisées dans la logique de contrôle d'accès
-   afin de déterminer si un utilisateur doit être autorisé à accéder à certaines fonctionnalités ou données.
-  */
+ 
   isAdmin(user: UserEntity): boolean {
     return isAdmin(user);
   }
-  // Méthode privée pour vérifier si l'utilisateur est bien le propriétaire de l'inspection
   isOwner(user: UserEntity, objet): boolean {
     return isOwner(user, objet);
   }

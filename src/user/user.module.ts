@@ -11,6 +11,7 @@ import { RoleGuard } from './guards/rôles.guard';
 import { MailModule } from 'src/mail/mail.module';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
+import { NotificationModule } from 'src/notification/notification.module';
 
 
 dotenv.config();
@@ -26,7 +27,8 @@ dotenv.config();
           expiresIn: 3600
         }
       }),
-      MailModule
+      MailModule,
+      NotificationModule
   ],
   controllers: [
     UserController,AuthController

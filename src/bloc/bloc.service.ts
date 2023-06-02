@@ -99,11 +99,12 @@ export class BlocService {
 
 
   async getBlocksByUnit(unitId: number): Promise<BlocEntity[]> {
-    return await this.blocRepository.find({
-      where: {
-        inspectionUnit: { id: unitId },
-      },
-    });
+    return await this.blocRepository
+      .createQueryBuilder('bloc')
+      .innerJoin('bloc.inspectionUnit', 'unit')
+      .select(['bloc.id', 'bloc.code', 'bloc.nom', 'bloc.etage'])
+      .where('unit.id = :unitId', { unitId })
+      .getMany();
   }
 
 

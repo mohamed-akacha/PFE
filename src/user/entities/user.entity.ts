@@ -5,6 +5,8 @@ import { Exclude } from 'class-transformer';
 import { InspectionEntity } from 'src/inspection/entites/inspection.entity';
 import { IsPhoneNumber } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { DeviceToken } from 'src/notification/entities/device_tokens.entity';
+import { NotificationEntity } from 'src/notification/entities/notification.entity';
 
 @Entity({name: 'users'})
 export class UserEntity extends TimestampEntites{
@@ -50,5 +52,11 @@ export class UserEntity extends TimestampEntites{
     nullable: true,
   })
   inspections: InspectionEntity[];
+
+  @OneToMany(() => DeviceToken, deviceToken => deviceToken.user)
+    deviceTokens: DeviceToken[];
+
+    @OneToMany(() => NotificationEntity, notification => notification.user)
+    notifications: NotificationEntity[];
   
 }
