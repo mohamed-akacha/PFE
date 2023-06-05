@@ -1,7 +1,7 @@
 import { ConflictException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { UserSubscribeDto } from './dto/user-subscribe.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Brackets, IsNull, Not, Repository, SelectQueryBuilder } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { UserEntity } from './entities/user.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -81,15 +81,25 @@ export class UserService {
     }
   }
  
-  async findAll(userReq: UserEntity, options = null): Promise<UserEntity[]> {
+  async findAll(userReq: UserEntity, role:any ,sd:any): Promise<UserEntity[]> {
     try {
       if (!this.isAdmin(userReq)) {
         throw new UnauthorizedException("Vous n'êtes pas autorisé à effectuer cette action.");
       }
-      if (options) {
-        return await this.userRepository.find(options);
+      const queryBuilder: SelectQueryBuilder<UserEntity> = this.userRepository.createQueryBuilder('user');
+
+      // Apply role filter
+      if (role) {
+        queryBuilder.andWhere('user.role = :role', { role });
       }
-      return await this.userRepository.find();
+
+      // Apply soft-deleted filter
+      if (sd === 'all') {
+        queryBuilder.withDeleted();
+      } 
+      return await queryBuilder.getMany();
+   
+    
     } catch (error) {
       throw new InternalServerErrorException(`Une erreur est survenue lors de la récupération des utilisateurs: ${error}`);
     }

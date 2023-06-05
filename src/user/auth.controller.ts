@@ -41,6 +41,7 @@ export class AuthController {
             return await this.authService.login(credentials);
         }
         catch (error) {
+            console.log("---*-*-*--*")
             throw new HttpException('Email ou mot de passe incorrect.', HttpStatus.UNAUTHORIZED);
         }
     }

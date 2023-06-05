@@ -14,7 +14,7 @@ export class TimestampEntites {
   @UpdateDateColumn()
   updatedAt: Date;
   
-  @Exclude()
+ 
   @DeleteDateColumn()
   deletedAt: Date;
 }

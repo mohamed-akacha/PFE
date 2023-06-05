@@ -1,4 +1,4 @@
-import { Body, ClassSerializerInterceptor, Controller, Delete, Get, HttpException, HttpStatus, InternalServerErrorException, Param, ParseIntPipe, Patch, Post, Put, Render, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, ClassSerializerInterceptor, Controller, Delete, Get, HttpException, HttpStatus, InternalServerErrorException, Param, ParseIntPipe, Patch, Post, Put, Query, Render, UseGuards, UseInterceptors } from '@nestjs/common';
 import { UserSubscribeDto } from './dto/user-subscribe.dto';
 import { UserService } from './user.service';
 import { LoginCredentialsDto } from './dto/login-credentials.dto';
@@ -20,17 +20,17 @@ export class UserController {
   ) {}
   
   //afficher tous les utilisateurs
-  @Get('')
+  @Get(':role/:sd')
   @ApiOperation({ summary: 'Liste de tous les utilisateur, saufs les soft deleted' })
   @Roles('admin')
   @UseGuards(JwtAuthGuard, RoleGuard)
-  async findAll(@User() userReq: UserEntity): Promise<UserEntity[]> {
+  async findAll(@User() userReq: UserEntity,@Param('role') role: string,@Param('sd') sd: string,): Promise<UserEntity[]> {
     try {
-      return await this.userService.findAll(userReq);
+      return await this.userService.findAll(userReq,role,sd);
     } catch (error) {
       throw new HttpException({
         status: HttpStatus.INTERNAL_SERVER_ERROR,
-        error: 'Une erreur est survenue lors de la récupération des utilisateurs.',
+        error: 'Une erreur est survenue lors de la récupération des utilisateurs.'+error,
       }, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }

@@ -12,7 +12,7 @@ dotenv.config(); // charge les variables d'environnement du fichier .env
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule); // crée l'application Nest
-
+  app.enableCors();
   // ValidationPipe global : valide les DTOs reçus en entrée des controllers
   app.useGlobalPipes(new ValidationPipe({
     // retire tous les champs qui ne sont pas déclarés dans la DTO
