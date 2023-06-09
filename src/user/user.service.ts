@@ -89,7 +89,7 @@ export class UserService {
       const queryBuilder: SelectQueryBuilder<UserEntity> = this.userRepository.createQueryBuilder('user');
 
       // Apply role filter
-      if (role) {
+      if (role!=="all") {
         queryBuilder.andWhere('user.role = :role', { role });
       }
 
@@ -106,12 +106,16 @@ export class UserService {
   }
 
   async getUserById(idUser?: number): Promise<UserEntity | null> {
+
     const user = await this.userRepository.createQueryBuilder('user')
-      .where('user.id = :id', { id: idUser })
+    .withDeleted()
+      .where({ id: idUser })
       .getOne();
-    return user || null;
+
+
+    return user ;
   }
-  async softDeleteUser(userReq: UserEntity, userId: number): Promise<string> {
+  async softDeleteUser(userReq: UserEntity, userId: number): Promise<UserEntity> {
 
     try {
 
@@ -122,8 +126,14 @@ export class UserService {
       if (result.affected === 0) {
         throw new NotFoundException(`Impossible de trouver l'utilisateur avec l'ID ${userId}.`);
       }
-      return 'Utilisateur supprimé avec succès';
+      const deletedUser = await this.userRepository.findOne({where:{id:userId}, withDeleted: true });
+      if (!deletedUser) {
+        throw new NotFoundException(`Impossible de trouver l'utilisateur avec l'ID ${userId}.`);
+      }
+
+      return deletedUser;
     } catch (error) {
+      console.log(error.message)
       throw new InternalServerErrorException("Une erreur est survenue lors de la suppression de l'utilisateur.");
     }
   }

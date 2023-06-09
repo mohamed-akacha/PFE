@@ -69,7 +69,7 @@ export class UserController {
   @Patch('softdelete/:id')
   @ApiOperation({ summary: 'Désactiver un utilisateur, (soft delete)' })
   async softDeleteUser(@User() userReq: UserEntity,
-    @Param('id', ParseIntPipe) userId: number): Promise<string> {
+    @Param('id', ParseIntPipe) userId: number): Promise<UserEntity> {
     try {
       return await this.userService.softDeleteUser(userReq, userId);
     } catch (error) {
@@ -90,6 +90,7 @@ export class UserController {
       return await this.userService.restoreUser(userReq, userId);
     } catch (error) {
       if (error instanceof HttpException) {
+        console.log(error.message)
         throw error;
       }
       throw new InternalServerErrorException('Une erreur est survenue lors de la restauration de l\'utilisateur.');
