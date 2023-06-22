@@ -31,6 +31,7 @@ export class ContratController {
   }
 
   @Get()
+  @Roles('admin')
   async getAllContracts(): Promise<Contrat[]> {
     try{
     return await this.contratService.getAllContrats();

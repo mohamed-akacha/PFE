@@ -1,15 +1,12 @@
 import { Body, ClassSerializerInterceptor, Controller, Delete, Get, HttpException, HttpStatus, InternalServerErrorException, Param, ParseIntPipe, Patch, Post, Put, Query, Render, UseGuards, UseInterceptors } from '@nestjs/common';
-import { UserSubscribeDto } from './dto/user-subscribe.dto';
 import { UserService } from './user.service';
-import { LoginCredentialsDto } from './dto/login-credentials.dto';
 import { UserEntity } from './entities/user.entity';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { RoleGuard } from './guards/rôles.guard';
 import { Roles } from 'src/decorators/roles.decorator';
 import { User } from 'src/decorators/user.decorator';
-import { ApiBasicAuth, ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UpdateUserDto } from './dto/update-user.dto';
-import * as bcrypt from 'bcrypt';
 @ApiTags("Users")
 @ApiBearerAuth()
 @Controller('users')
