@@ -47,9 +47,11 @@ export class EvaluationController {
 @Roles('user','admin')
 //@UsePipes()
 async saveEvaluation(
-  @Body(EvaluationDtoValidationPipe) evaluationDtos: CreateEvaluationDto[],
+  @Body() evaluationDtos: CreateEvaluationDto[],
 ): Promise<EvaluationEntity[]> {
   try {
+    console.log("+++++++++++++++++++++++++++++")
+    console.log(evaluationDtos)
     const evaluations = await Promise.all(
       evaluationDtos.map((evaluationDto) =>
         this.evaluationService.saveEvaluation(evaluationDto),
