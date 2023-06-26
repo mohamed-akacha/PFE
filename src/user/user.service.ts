@@ -14,7 +14,6 @@ export class UserService {
   
     //create first admin account
   async seedUser(userData: UserSubscribeDto): Promise<Partial<UserEntity>> {
-
     const user = this.userRepository.create({
       ...userData
     });
@@ -40,6 +39,7 @@ export class UserService {
       throw new InternalServerErrorException(`Une erreur est survenue lors de la récupération des utilisateurs: ${error}`);
     }
   }
+
   async updateUser(id: number, updateUserDto: UpdateUserDto, userReq: UserEntity | undefined): Promise<Partial<UserEntity>> {
     if (!this.isAdmin(userReq)) {
         throw new UnauthorizedException("Vous n'êtes pas autorisé à effectuer cette action.");
@@ -154,7 +154,7 @@ export class UserService {
 
     return restoredUser;
   }
-  async deleteUser(userReq: UserEntity, userId: number): Promise<string> {
+  async deleteUser(userReq: UserEntity, userId: number): Promise<{ message:string }> {
     // Vérifier si l'utilisateur est autorisé à effectuer cette action
     if (!this.isAdmin(userReq)) {
       throw new UnauthorizedException("Vous n'êtes pas autorisé à effectuer cette action.");
@@ -167,7 +167,7 @@ export class UserService {
     if (result.affected === 0) {
       throw new NotFoundException(`Impossible de trouver l'utilisateur avec l'ID ${userId}.`);
     }
-    return `L'utilisateur a été supprimée définitivement avec succès.`;
+    return {message:`utilisateur a été supprimée définitivement avec succès.`};
   }
 
  

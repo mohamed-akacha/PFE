@@ -105,10 +105,11 @@ export class UserController {
   async deleteUser(
     @User() userReq: UserEntity,
     @Param('id', ParseIntPipe) userId: number
-  ): Promise<string> {
+  ): Promise<{ message:string }> {
     try {
       return await this.userService.deleteUser(userReq, userId);
     } catch (error) {
+      console.log(error)
       if (error instanceof HttpException) {
         throw error;
       }

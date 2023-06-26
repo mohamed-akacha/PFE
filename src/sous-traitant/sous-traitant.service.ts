@@ -115,7 +115,7 @@ export class SousTraitantService {
     return restoredsousTraitant;
   }
 
-  async deleteSousTraitant(user: UserEntity, sousTraitantId: number): Promise<string> {
+  async deleteSousTraitant(user: UserEntity, sousTraitantId: number): Promise<{ message:string }> {
     // Vérifier si l'utilisateur est autorisé à effectuer cette action
     if (!this.userService.isAdmin(user)) {
       throw new UnauthorizedException('Vous n\'êtes pas autorisé à effectuer cette action.');
@@ -130,7 +130,7 @@ export class SousTraitantService {
     }
 
     // Envoyer une réponse pour indiquer que l'opération s'est déroulée avec succès
-    return `Le sous-traitant a été supprimé avec succès.`;
+    return {message:`Le sous-traitant a été supprimé avec succès.`};
   }
   
 

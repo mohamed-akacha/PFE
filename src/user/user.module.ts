@@ -12,6 +12,7 @@ import { MailModule } from 'src/mail/mail.module';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { NotificationModule } from 'src/notification/notification.module';
+import {ExtendedJwtModule} from "./extended-jwt.module";
 
 
 dotenv.config();
@@ -22,13 +23,13 @@ dotenv.config();
       defaultStrategy: 'jwt'
     }),
     JwtModule.register({
-        secret:process.env.SECRET,
-        signOptions: {
-          expiresIn: 3600
-        }
-      }),
-      MailModule,
-      NotificationModule
+      secret:process.env.SECRET,
+      signOptions: {
+        expiresIn: 3600
+      }
+    }),
+    MailModule,
+    NotificationModule
   ],
   controllers: [
     UserController,AuthController

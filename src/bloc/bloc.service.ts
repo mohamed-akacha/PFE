@@ -109,6 +109,7 @@ export class BlocService {
 
 
 
+
   async softDeleteBloc(user: UserEntity, blocId: number): Promise<string> {
     // Vérifier si l'utilisateur est autorisé à effectuer cette action
     if (!this.userService.isAdmin(user)) {
@@ -148,7 +149,7 @@ export class BlocService {
     return restoredBloc;
   }
 
-  async deleteBloc(user: UserEntity, blocId: number): Promise<string> {
+  async deleteBloc(user: UserEntity, blocId: number): Promise<{ message:string }> {
     // Vérifier si l'utilisateur est autorisé à effectuer cette action
     if (!this.userService.isAdmin(user)) {
       throw new UnauthorizedException('Vous n\'êtes pas autorisé à effectuer cette action.');
@@ -163,7 +164,7 @@ export class BlocService {
     }
 
     // Envoyer une réponse pour indiquer que l'opération s'est déroulée avec succès
-    return `Le bloc a été supprimé avec succès.`;
+    return {message:`Le bloc a été supprimé avec succès.`};
   }
 
 }

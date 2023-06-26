@@ -1,4 +1,11 @@
-import { ConflictException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from "@nestjs/common";
+import {
+    ConflictException,
+    ForbiddenException,
+    Injectable,
+    InternalServerErrorException,
+    NotFoundException,
+    UnauthorizedException
+} from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
@@ -8,55 +15,49 @@ import * as bcrypt from 'bcrypt';
 import { isAdmin } from "./shared.utils";
 import { MailService } from "src/mail/mail.service";
 import { UpdateUserDto } from "./dto/update-user.dto";
+import {RefreshTokenService} from"./refresh-token.service";
 import { UserService } from "./user.service";
 import { UserRSubscribeDto } from "./dto/real-user-create.dto";
 import { randomInt } from "crypto";
 import { NotificationService } from "src/notification/notification.service";
+import { ConfigService } from '@nestjs/config';
+import {Tokens} from "./types/tokens.type";
+
 @Injectable()
 export class AuthService {
     //constructor
     constructor(@InjectRepository(UserEntity)
-    private userRepository: Repository<UserEntity>,
-        private jwtService: JwtService,
-        private readonly mailService: MailService,
-        private readonly userService: UserService,
-        private readonly notificationService: NotificationService,) { }
+                private userRepository: Repository<UserEntity>,
+                private jwtService: JwtService,
+                private config: ConfigService,
+                private readonly mailService: MailService,
+                private readonly userService: UserService,
+                private readonly notificationService: NotificationService,) { }
     //authentification
     async login(credentials: LoginCredentialsDto) {
         // Récupére le login, le mot de passe, et le token de device
         const { email, password, deviceToken } = credentials;
         const user = await this.userRepository
-          .createQueryBuilder("user")
-          .where("user.email = :email", { email })
-          .getOne();
-          
-        if (!user) {
-          throw new NotFoundException('Compte inexistant.');
-        }
-    
+            .createQueryBuilder("user")
+            .where("user.email = :email", { email })
+            .getOne();
+        if (!user) { throw new NotFoundException('Compte inexistant.');}
         const hashedPassword = await bcrypt.hash(password, user.salt);
         if (hashedPassword === user.password) {
-          const payload = {
-            id : user.id,
-            username: user.username,
-            email: user.email,
-            role: user.role,
-          };
-          const jwt = this.jwtService.sign(payload);
-    
-          // Ajoute le token de device à la base de données
-          if (deviceToken) {
-            await this.notificationService.addDeviceToken(user.id, deviceToken);
-            //console.log("++++++++++++++ deviceToken :",deviceToken);
-          }
-          return { "access_token": jwt };
+            const tokens = await this.getTokens(user.id,user.email,user.username,user.role);
+            await this.updateRtHash(user, tokens.refresh_token);
+            // Ajoute le token de device à la base de données
+            if (deviceToken) {
+                await this.notificationService.addDeviceToken(user.id, deviceToken);
+            }
+
+            return tokens;
         } else {
-          throw new NotFoundException('Mot de passe incorrect.');
+            throw new NotFoundException('Mot de passe incorrect.');
         }
-      }
-    //Creation d'un utilisateur
-    async createUser(userReq: UserEntity, userData: UserRSubscribeDto)
-        : Promise<any> {
+    }
+
+    async createUser(userReq: UserEntity, userData: UserRSubscribeDto) : Promise<any> {
         if (!isAdmin(userReq)) {
             throw new UnauthorizedException("Vous n'êtes pas autorisé à effectuer cette action.");
         }
@@ -79,6 +80,7 @@ export class AuthService {
                 "New user",
                 newUrl,
             );
+            return savedUser;
         }
         catch (e) {
             console.log(e.message);
@@ -88,7 +90,7 @@ export class AuthService {
             throw new InternalServerErrorException();
         }
     }
-    // Confirmation d'un compte
+
     async confirmAccount(id: number, updateUserDto: UpdateUserDto): Promise<Partial<UserEntity>> {
         const user = await this.userService.getUserById(id);
         if (!user) {
@@ -113,7 +115,6 @@ export class AuthService {
             throw new InternalServerErrorException();
         }
     }
-
 
     async sendVerificationCode(email: string): Promise<{ success: boolean, message?: string }> {
         const user = await this.userRepository
@@ -170,6 +171,76 @@ export class AuthService {
         } catch (error) {
             console.error(error);
             return { success: false, message: 'Failed to change password' };
+        }
+    }
+
+
+
+
+
+
+    async logout(userId: number): Promise<boolean> {
+        await this.userRepository.createQueryBuilder("user").update()
+            .set({"hashedRt": null})
+            .where("id = :id ", {id:userId})
+            .andWhere('hashedRt not(:hr)', { hr:null })
+            .execute();
+        return true;
+    }
+
+    async refreshTokens(userReq: UserEntity, rt: string): Promise<Tokens> {
+        const userId=userReq.id;
+        const user=await this.userRepository.createQueryBuilder("user")
+            .where("id = :id", { userId })
+            .getOne();
+        if (!user || !user.hashedRt) throw new ForbiddenException('Accès refusé');
+        const rtMatches = await bcrypt.verify(user.hashedRt, rt);
+        if (!rtMatches) throw new ForbiddenException('Accès refus');
+        const tokens = await this.getTokens(userId,userReq.email,userReq.username,userReq.role);
+        await this.updateRtHash(user, tokens.refresh_token);
+        return tokens;
+    }
+
+    async updateRtHash(user:UserEntity, rt: string): Promise<void> {
+        try {
+            const hash = await bcrypt.hash(rt, user.salt);
+            const userId = user.id;
+            await this.userRepository.createQueryBuilder("user").update()
+                .set({"hashedRt": hash})
+                .where("id = :id", {id:userId})
+                .execute();
+        }catch(error){
+            console.log(error)
+        }
+    }
+
+    async getTokens(userId: number, email: string,username:string,role:string): Promise<Tokens> {
+
+        try{
+            const jwtPayload = {
+                sub: userId,
+                id: userId,//user.id,
+                username: username,//user.username,
+                email: email, //user.email,
+                role: role,// user.role,
+            };
+
+            const [at, rt] = await Promise.all([
+                this.jwtService.signAsync(jwtPayload, {
+                    secret: this.config.get<string>('AT_SECRET'),
+                    expiresIn: '1d',
+                }),
+                this.jwtService.signAsync(jwtPayload, {
+                    secret: this.config.get<string>('RT_SECRET'),
+                    expiresIn: '7d',
+                }),
+            ]);
+            return {
+                access_token: at,
+                refresh_token: rt,
+            };
+        }catch(error){
+            console.log(error)
         }
     }
 

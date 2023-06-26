@@ -40,7 +40,8 @@ import { FirebaseModule } from './firebase-module';
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
       autoLoadEntities: true,
-      entities: ["dist/**/*.entity{.ts,.js}"],
+      //dropSchema:true,
+      entities: [ "dist/**/*.entity{.ts,.js}"],
       /* UserEntity,InspectionEntity,EvaluationPointEntity,
       EvaluationEntity,InspectionUnitEntity,InstitutionEntity,
       BlocEntity,ZoneEntity,SousTraitantEntity,Contrat */

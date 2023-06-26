@@ -1,4 +1,4 @@
-import { OneToMany, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {OneToMany, Column, Entity, PrimaryGeneratedColumn, JoinColumn} from 'typeorm';
 import { TimestampEntites } from '../../generics/timestamp.entites.';
 import { UserRoleEnum } from '../../enums/user-role.enum';
 import { Exclude } from 'class-transformer';
@@ -31,6 +31,9 @@ export class UserEntity extends TimestampEntites{
   @Column({nullable:true})
   @Exclude()
   password: string;
+  @Column({nullable:true})
+  @Exclude()
+  hashedRt: string;
 
   @Column({nullable:true})
   @Exclude()

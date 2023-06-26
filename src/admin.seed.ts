@@ -20,7 +20,7 @@ export class AdminSeed implements OnModuleInit {
        { const adminUser: UserSubscribeDto = {
             username: 'Admin',
             tel: '58042391',
-            email: 'admin@example.com',
+            email: 'admin@inspection.com',
             password: 'admin123',
             role: UserRoleEnum.ADMIN,  
           };

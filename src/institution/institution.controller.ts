@@ -42,6 +42,41 @@ export class InstitutionController {
       throw error;
     }
   }
+  @Get("A")
+  @Roles('admin', 'user')
+  async getAllInstitutionsA(): Promise<any> {
+    try {
+      return  await this.institutionService.getAllInstitutionsA();
+
+    } catch (error) {
+      throw error;
+    }
+  }
+
+
+
+
+  @Get("/byzone/:id")
+  @Roles('admin', 'user')
+  async getAllInstitutionsByZone(@Param('id', ParseIntPipe) id: number): Promise<InstitutionEntity[]> {
+    try {
+      return  await this.institutionService.getAllInstitutionsByZone(id);
+
+    } catch (error) {
+      throw error;
+    }
+  }
+  @Get("/byzone/A/:id")
+  @Roles('admin', 'user')
+  async getAllInstitutionsByZoneA(@Param('id', ParseIntPipe) id: number): Promise<any> {
+    try {
+      return  await this.institutionService.getAllInstitutionsByZoneA(id);
+
+    } catch (error) {
+      console.log(error)
+      throw error;
+    }
+  }
 
   @Get(':id')
   @Roles('admin', 'user')
@@ -53,6 +88,7 @@ export class InstitutionController {
       }
       return institution;
     } catch (error) {
+      console.log(error)
       throw error;
     }
   }
@@ -97,7 +133,7 @@ export class InstitutionController {
 
   @Delete('force/:id')
   @Roles('admin')
-  async deleteInstitution(@Param('id', ParseIntPipe) id: number,@User() user: UserEntity): Promise<string> {
+  async deleteInstitution(@Param('id', ParseIntPipe) id: number,@User() user: UserEntity): Promise<{ message:string }> {
     try {
       return await this.institutionService.deleteInstitution(user,id);
 

@@ -2,7 +2,7 @@ import { Injectable, InternalServerErrorException, NotFoundException, Unauthoriz
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { UserService } from 'src/user/user.service';
-import { Repository } from 'typeorm';
+import {LessThanOrEqual, Repository} from 'typeorm';
 import { CreateInstitutionDto } from './dto/create-institution.dto';
 import { UpdateInstitutionDto } from './dto/update-institution.dto';
 import { InstitutionEntity } from './entities/institution.entity';
@@ -15,10 +15,7 @@ export class InstitutionService {
     private readonly userService: UserService,
   ) { }
 
-  async createInstitution(
-    user: UserEntity,
-    createInstitutionDto: CreateInstitutionDto,
-  ): Promise<InstitutionEntity> {
+  async createInstitution(user: UserEntity,createInstitutionDto: CreateInstitutionDto,): Promise<InstitutionEntity> {
      // Vérifier si l'utilisateur est autorisé à effectuer cette action
      if (!this.userService.isAdmin(user)) {
       throw new UnauthorizedException( "Vous n'êtes pas autorisé à effectuer cette action.");
@@ -41,7 +38,66 @@ export class InstitutionService {
     } catch (error) {
       throw new InternalServerErrorException("Une erreur est survenue lors de la récupération des institutions.", error.message);
     }
-   
+  }
+
+  async getAllInstitutionsA(): Promise<any> {
+    try {
+      const queryBuilder = this.institutionRepository.createQueryBuilder('institution')
+          .leftJoinAndSelect('institution.zone', 'zone')
+          .leftJoinAndSelect('institution.inspectionUnits', 'inspectionUnits');
+
+      const institutions = await queryBuilder.getMany();
+
+      const data = institutions.map(institution => ({
+        id:institution.id,
+        nom: institution.nom,
+        nature: institution.nature,
+        adresse: institution.adresse,
+        zone: institution.zone.nom,
+        numberOfInspectionUnits: institution.inspectionUnits.length,
+      }));
+
+      return data;
+    } catch (error) {
+      throw new InternalServerErrorException("Une erreur est survenue lors de la récupération des institutions.", error.message);
+    }
+  }
+
+  async getAllInstitutionsByZoneA(zoneId: number): Promise<any> {
+    try {
+      const queryBuilder = this.institutionRepository.createQueryBuilder('institution')
+          .leftJoinAndSelect('institution.zone', 'zone')
+          .leftJoinAndSelect('institution.inspectionUnits', 'inspectionUnits')
+          .where('zone.id = :zoneId', { zoneId })
+          .setParameter('zoneId', zoneId);
+
+      const institutions = await queryBuilder.getMany();
+
+      const data = institutions.map(institution => ({
+        id:institution.id,
+        nom: institution.nom,
+        nature: institution.nature,
+        adresse: institution.adresse,
+        zone: institution.zone.nom,
+        numberOfInspectionUnits: institution.inspectionUnits.length,
+      }));
+
+      return data;
+    } catch (error) {
+      throw new InternalServerErrorException("Une erreur est survenue lors de la récupération des institutions.", error.message);
+    }
+  }
+
+  async getAllInstitutionsByZone(zoneId:number): Promise<InstitutionEntity[]> {
+    try {
+      const queryBuilder =  this.institutionRepository.createQueryBuilder('institution')
+          .leftJoinAndSelect('institution.zone', 'zone')
+          .where('zone.id = :zoneId', { zoneId })
+      ;
+      return await queryBuilder.getMany();
+    } catch (error) {
+      throw new InternalServerErrorException("Une erreur est survenue lors de la récupération des institutions.", error.message);
+    }
   }
 
   async getInstitutionById(id: number): Promise<InstitutionEntity> {
@@ -52,11 +108,7 @@ export class InstitutionService {
     return institution;
   }
 
-  async updateInstitution(
-    id: number,
-    updateInstitutionDto: UpdateInstitutionDto,
-    user: UserEntity,
-  ): Promise<Partial<InstitutionEntity>> {
+  async updateInstitution(id: number,updateInstitutionDto: UpdateInstitutionDto,user: UserEntity,): Promise<Partial<InstitutionEntity>> {
     // Vérifier que l'utilisateur est un administrateur
     if (!this.userService.isAdmin(user)) {
       throw new UnauthorizedException("Seuls les administrateurs sont autorisés à modifier des institutions.");
@@ -78,10 +130,7 @@ export class InstitutionService {
     }
   }
 
-  async softDeleteInstitution(
-    user: UserEntity,
-    institutionId: number,
-  ): Promise<string> {
+  async softDeleteInstitution(user: UserEntity,institutionId: number,): Promise<string> {
     // Vérifier si l'utilisateur est autorisé à effectuer cette action
     if (!this.userService.isAdmin(user)) {
       throw new UnauthorizedException(
@@ -126,7 +175,7 @@ export class InstitutionService {
     return restoredInstitution;
 }
 
-async deleteInstitution(user: UserEntity, institutionId: number): Promise<string> {
+  async deleteInstitution(user: UserEntity, institutionId: number): Promise<{ message:string }> {
     // Vérifier si l'utilisateur est autorisé à effectuer cette action
     if (!this.userService.isAdmin(user)) {
       throw new UnauthorizedException("Vous n'êtes pas autorisé à effectuer cette action.");
@@ -141,7 +190,7 @@ async deleteInstitution(user: UserEntity, institutionId: number): Promise<string
     }
 
     // Envoyer une réponse pour indiquer que l'opération s'est déroulée avec succès
-    return `L'institution a été supprimée avec succès.`;
+    return {message:`L'institution a été supprimée avec succès.`};
 }
 
 

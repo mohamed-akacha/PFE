@@ -90,7 +90,7 @@ export class SousTraitantController {
   @Delete('force/:id')
   @Roles('admin')
   async deleteSousTraitant(@User() user: UserEntity,
-    @Param('id', ParseIntPipe) sousTraitantId: number): Promise<string> {
+    @Param('id', ParseIntPipe) sousTraitantId: number): Promise<{ message:string }> {
     try {
       return await this.sousTraitantService.deleteSousTraitant(user, sousTraitantId);
     } catch (error) {

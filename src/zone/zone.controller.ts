@@ -1,4 +1,18 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, NotFoundException, UseInterceptors, ClassSerializerInterceptor, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  ParseIntPipe,
+  NotFoundException,
+  UseInterceptors,
+  ClassSerializerInterceptor,
+  UseGuards,
+  Put
+} from '@nestjs/common';
 import { ZoneService } from './zone.service';
 import { CreateZoneDto } from './dto/create-zone.dto';
 import { UpdateZoneDto } from './dto/update-zone.dto';
@@ -55,7 +69,7 @@ export class ZoneController {
     }
   }
 
-  @Patch(':id')
+  @Put(':id')
   @Roles('admin')
   async updateZone(
     @Param('id', ParseIntPipe) id: number,
@@ -95,7 +109,7 @@ export class ZoneController {
 
   @Delete('force/:id')
   @Roles('admin')
-  async deleteZone(@Param('id', ParseIntPipe) id: number,@User() user: UserEntity): Promise<string>{
+  async deleteZone(@Param('id', ParseIntPipe) id: number,@User() user: UserEntity): Promise<{ message:string }>{
     try {
       return await this.zoneService.deleteZone(user, id);
     } catch (error) {

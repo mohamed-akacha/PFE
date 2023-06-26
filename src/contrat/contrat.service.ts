@@ -2,7 +2,7 @@ import { BadRequestException, Injectable, InternalServerErrorException, NotFound
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from 'src/user/entities/user.entity';
 import { UserService } from 'src/user/user.service';
-import { EntityNotFoundError, Repository, TypeORMError } from 'typeorm';
+import {Between, EntityNotFoundError, LessThan, Repository, TypeORMError} from 'typeorm';
 import { Contrat } from './entities/contrat.entity';
 import { CreateContratDto } from './dto/create-contrat.dto';
 import { UpdateContratDto } from './dto/update-contrat.dto';
@@ -19,13 +19,24 @@ export class ContratService {
   async createContrat(
     user: UserEntity,
     createContratDto: CreateContratDto,
-  ): Promise<Partial<Contrat>> {
+  ): Promise<Contrat | { message: string }>  {
     // Vérifier que l'utilisateur est un administrateur
     if (!this.userService.isAdmin(user)) {
-      throw new UnauthorizedException("Seuls les administrateurs sont autorisés à créer des contrats.");
+      return { message: "Seuls les administrateurs sont autorisés à créer des contrats." };
     }
 
-    const { date_debut, duree } = createContratDto;
+    const { date_debut, duree, institutionId } = createContratDto;
+    const endDate = new Date(date_debut);
+    endDate.setFullYear(endDate.getFullYear() + duree);
+    const existingContract = await this.contratRepository.findOne({
+      where: {
+        institution: { id: institutionId },
+        date_debut: Between(date_debut, new Date(date_debut.getFullYear() + duree, date_debut.getMonth(), date_debut.getDate())),
+      },
+    });
+    if (existingContract) {
+      return { message: "Un contrat avec la même institution existe déjà dans la période spécifiée." };
+    }
     try {
       const newContract = this.contratRepository.create({
         date_debut,
@@ -36,12 +47,10 @@ export class ContratService {
 
       return await this.contratRepository.save(newContract);
     } catch (error) {
-      if (error instanceof BadRequestException) {
-        throw error;
-      } else if (error instanceof TypeORMError) {
-        throw new BadRequestException("Les données du contrat sont invalides.");
+      if (error instanceof TypeORMError) {
+        return { message: "Les données du contrat sont invalides." };
       } else {
-        throw new InternalServerErrorException("Une erreur est survenue lors de la création d'un contrat.", error.message);
+        return { message: "Une erreur est survenue lors de la création d'un contrat." };
       }
     }
   }
@@ -49,7 +58,10 @@ export class ContratService {
 
   async getAllContrats(): Promise<Contrat[]> {
     try {
-      const queryBuilder = this.contratRepository.createQueryBuilder('contrats');
+      const queryBuilder = this.contratRepository .createQueryBuilder('contrats')
+          .leftJoinAndSelect('contrats.institution', 'institution')
+          .leftJoinAndSelect('contrats.sousTraitant', 'sousTraitant')
+          .leftJoinAndSelect('institution.zone', 'zone');
       return await queryBuilder.getMany();
     } catch (error) {
       if (error instanceof BadRequestException) {
@@ -65,12 +77,16 @@ export class ContratService {
 
   async getContratById(id: number): Promise<Contrat> {
     try {
-      const contrat = await this.contratRepository.createQueryBuilder('contrat')
-        .where('contrat.id = :id', { id })
+      const contrat = await this.contratRepository.createQueryBuilder('contrats')
+          .leftJoinAndSelect('contrats.institution', 'institution')
+          .leftJoinAndSelect('contrats.sousTraitant', 'sousTraitant')
+          .leftJoinAndSelect('institution.zone', 'zone')
+        .where('contrats.id = :id', { id })
         .getOneOrFail();
 
       return contrat;
     } catch (error) {
+      console.log(error)
       if (error instanceof EntityNotFoundError) {
         throw new NotFoundException(`Le contrat d'identifiant ${id} n'existe pas.`);
       } else {
