@@ -26,7 +26,7 @@ export class InspectionEntity extends TimestampEntites {
   @Column({ type: "enum", enum: InspectionType })
   type: InspectionType;
 
-  @ManyToOne(() => UserEntity, user => user.inspections , {nullable: true, })
+  @ManyToOne(() => UserEntity, user => user.inspections , { nullable: true, onDelete: 'SET NULL' })
   user: UserEntity;
 
   @OneToMany(() => EvaluationEntity, evaluation => evaluation.inspection ,{ nullable: true })

@@ -104,7 +104,7 @@ export class BlocController {
   @Delete('force/:id')
   @Roles('admin')
   async deleteBloc(@User() user: UserEntity,
-    @Param('id', ParseIntPipe) blocId: number): Promise<string> {
+    @Param('id', ParseIntPipe) blocId: number): Promise<{ message:string }> {
     try {
       return await this.blocService.deleteBloc(user, blocId);
     } catch (error) {

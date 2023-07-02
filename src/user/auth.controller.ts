@@ -1,5 +1,5 @@
 import { Controller, UseInterceptors, ClassSerializerInterceptor, Body, HttpException, HttpStatus, Post, Get, Param, Render, InternalServerErrorException, UseGuards, ParseIntPipe, Put, Patch } from "@nestjs/common";
-import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
+import {ApiBearerAuth, ApiBody, ApiTags} from "@nestjs/swagger";
 import { Roles } from "src/decorators/roles.decorator";
 import { User } from "src/decorators/user.decorator";
 import { AuthService } from "./auth.service";
@@ -11,6 +11,8 @@ import { JwtAuthGuard } from "./guards/jwt-auth.guard";
 import { RoleGuard } from "./guards/rôles.guard";
 import { ResetPasswordDto } from "./dto/reset-password.dto";
 import { VerityEmailCodeDto } from "./dto/verify-email-code.dto";
+import {Tokens} from "./types/tokens.type";
+import {RefreshTokenDto} from "./dto/refresh.token.dto";
 
 @ApiTags("Auth")
 @ApiBearerAuth()
@@ -41,10 +43,19 @@ export class AuthController {
             return await this.authService.login(credentials);
         }
         catch (error) {
-            console.log("---*-*-*--*")
+
             throw new HttpException('Email ou mot de passe incorrect.', HttpStatus.UNAUTHORIZED);
         }
     }
+    @Post('refresh')
+    @UseGuards(JwtAuthGuard)
+    async refreshTokens(
+        @User() userReq: UserEntity,
+        @Body() refreshToken: string,
+    ): Promise<Tokens> {
+        return this.authService.refreshTokens(userReq, refreshToken);
+    }
+
     //confirmation d'un compte
     @Put(':id')
     async confirmAccount(@User() userReq: UserEntity, @Body() userData: UpdateUserDto,

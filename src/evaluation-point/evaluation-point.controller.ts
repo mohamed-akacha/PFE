@@ -52,6 +52,7 @@ export class EvaluationPointController {
   @Roles('admin','user')
   async getEvaluationPointById(@Param('id', ParseIntPipe) id: number, @User() user: UserEntity): Promise<EvaluationPointEntity> {
     try {
+      console.log(id,'************************')
     return await this.evaluationPointService.getEvaluationPointById(id, user);
   } catch (error) {
     if (error instanceof UnauthorizedException) {
@@ -106,7 +107,7 @@ export class EvaluationPointController {
 
   @Delete('force/:id')
   @Roles('admin')
-  async deleteEvaluationPoint(@User() user: UserEntity, @Param('id', ParseIntPipe) evaluationPointId: number): Promise<string> {
+  async deleteEvaluationPoint(@User() user: UserEntity, @Param('id', ParseIntPipe) evaluationPointId: number): Promise<any> {
     try {
     return await this.evaluationPointService.deleteEvaluationPoint(user, evaluationPointId);
   } catch (error) {

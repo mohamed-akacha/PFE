@@ -25,6 +25,7 @@ export class InspectionUnitController {
     @Body() createInspectionUnitDto: CreateInspectionUnitDto,
   ): Promise<InspectionUnitEntity> {
     try {
+      console.log(createInspectionUnitDto)
       const inspectionUnit = await this.inspectionUnitService.createInspectionUnit(user, createInspectionUnitDto);
       return inspectionUnit;
     } catch (error) {
@@ -56,6 +57,22 @@ export class InspectionUnitController {
       throw error;
     }
   }
+
+  @Get('byInstitution/:id')
+  @Roles('admin', 'user')
+  async getUnitsByInstitution(@Param('id', ParseIntPipe) id: number): Promise<any> {
+    try {
+      const inspectionUnit = await this.inspectionUnitService.getUnitsByInstitution(id);
+      if (!inspectionUnit) {
+        throw new Error(`Inspection unit with ID ${id} not found`);
+      }
+      return inspectionUnit;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+
 
   @Patch(':id')
   @Roles('admin')

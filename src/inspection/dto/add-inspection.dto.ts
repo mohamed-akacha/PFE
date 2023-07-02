@@ -5,6 +5,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class AddInspectionDto {
 
+
   @ApiProperty({
     description: 'La description de l\'inspection',
     example: 'Vérification de l\'état de la chaudière',

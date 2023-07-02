@@ -87,7 +87,14 @@ export class InspectionService {
     return await queryBuilder.getMany();
   }
 
-
+  async getAllInspectionsByInstitution(user: UserEntity,id:number): Promise<InspectionEntity[]> {
+    const queryBuilder = this.inspectionRepository.createQueryBuilder("inspection").leftJoinAndSelect("inspection.user", "user")
+        .leftJoinAndSelect("inspection.unit", "unit")
+        .leftJoinAndSelect('unit.institution', 'institution')
+        .where('institution.id = :id',{id})
+        .getMany();
+    return queryBuilder;
+  }
   async getInspectionById(userReq: UserEntity, inspectionId: number): Promise<InspectionEntity> {
     // Récupérer l'inspection spécifique en utilisant son ID avec les informations de l'utilisateur
     const inspection = await this.inspectionRepository.createQueryBuilder("inspection")
@@ -249,6 +256,7 @@ export class InspectionService {
   private canViewInspection(user: UserEntity, inspection: InspectionEntity): boolean {
     return this.userService.isAdmin(user) || this.userService.isOwner(user, inspection);
   }
+
 
 
 }

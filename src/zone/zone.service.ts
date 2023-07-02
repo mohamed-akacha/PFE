@@ -63,10 +63,7 @@ export class ZoneService {
     }
     return this.zoneRepository.save(updatedZone);
   }
-  async softDeleteZone(
-    user: UserEntity,
-    zoneId: number,
-  ): Promise<string> {
+  async softDeleteZone(user: UserEntity,zoneId: number): Promise<string> {
     // Vérifier si l'utilisateur est autorisé à effectuer cette action
     if (!this.userService.isAdmin(user)) {
       throw new UnauthorizedException(
@@ -111,7 +108,7 @@ export class ZoneService {
     return restoredZone;
   }
 
-  async deleteZone(user: UserEntity, id: number): Promise<string> {
+  async deleteZone(user: UserEntity, id: number): Promise<{ message:string }> {
     // Vérifier si l'utilisateur est autorisé à effectuer cette action
     if (!this.userService.isAdmin(user)) {
       throw new UnauthorizedException("Vous n'êtes pas autorisé à effectuer cette action.");
@@ -124,6 +121,6 @@ export class ZoneService {
     }
 
     // Envoyer une réponse pour indiquer que l'opération s'est déroulée avec succès
-    return `Zone a été supprimée avec succès.`;
+    return {message:`Zone a été supprimée avec succès.`};
   }
 }

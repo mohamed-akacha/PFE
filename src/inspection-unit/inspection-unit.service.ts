@@ -16,10 +16,7 @@ export class InspectionUnitService {
   ) { }
 
 
-  async createInspectionUnit(
-    user: UserEntity,
-    createInspectionUnitDto: CreateInspectionUnitDto,
-  ): Promise<InspectionUnitEntity> {
+  async createInspectionUnit(user: UserEntity,createInspectionUnitDto: CreateInspectionUnitDto,): Promise<InspectionUnitEntity> {
     try {
       const inspectionUnit = this.inspectionUnitRepository.create({
         ...createInspectionUnitDto,
@@ -46,6 +43,7 @@ export class InspectionUnitService {
     }
 
   }
+
   async getUnitById(id?: number): Promise<InspectionUnitEntity | null> {
     const unit = await this.inspectionUnitRepository
       .createQueryBuilder('unit')
@@ -54,12 +52,23 @@ export class InspectionUnitService {
     return unit || null;
   }
 
+  async getUnitsByInstitution(id:number):Promise<any>{
+    const units = await this.inspectionUnitRepository
+        .createQueryBuilder('unit')
+        .leftJoinAndSelect("unit.blocs","blocs")
+        .where('unit.institution.id= :id',{id})
+        .getMany();
 
-  async updateInspectionUnit(
-    idUnit: number,
-    updateInspectionUnitDto: UpdateInspectionUnitDto,
-    user: UserEntity,
-  ): Promise<Partial<InspectionUnitEntity>> {
+    const data = units.map(unit => ({
+      id:unit.id,
+      nom: unit.nom,
+      code: unit.code,
+      numberOfBlocs: unit.blocs ? unit.blocs.length : 0
+    }));
+    return data;
+  }
+
+  async updateInspectionUnit(idUnit: number,updateInspectionUnitDto: UpdateInspectionUnitDto, user: UserEntity,): Promise<Partial<InspectionUnitEntity>> {
      // Vérifier que l'utilisateur est un administrateur
      if (!this.userService.isAdmin(user)) {
       throw new UnauthorizedException("Seuls les administrateurs sont autorisés à modifier des unités d'inspection");
@@ -104,8 +113,6 @@ export class InspectionUnitService {
     // Envoyer une réponse pour indiquer que l'opération s'est déroulée avec succès
     return `L'unité d'inspection a été soft-deleted avec succès.`;
   }
-  
-
 
   async restoreInspectionUnit(user: UserEntity, inspectionUnitId: number): Promise<InspectionUnitEntity> {
     // Vérifier si l'utilisateur est autorisé à effectuer cette action
@@ -128,7 +135,7 @@ export class InspectionUnitService {
     return restoredInspectionUnit;
 }
 
-async deleteInspectionUnit(user: UserEntity, inspectionUnitId: number): Promise<string> {
+  async deleteInspectionUnit(user: UserEntity, inspectionUnitId: number): Promise<string> {
     // Vérifier si l'utilisateur est autorisé à effectuer cette action
     if (!this.userService.isAdmin(user)) {
       throw new UnauthorizedException("Vous n'êtes pas autorisé à effectuer cette action.");

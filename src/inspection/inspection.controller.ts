@@ -44,10 +44,11 @@ export class InspectionController {
     @Body() inspectionDto: AddInspectionDto,
   ) : Promise<Partial<InspectionEntity>>{
     try {
-      
       return await this.inspectionService.createInspection(user, inspectionDto);
     } catch (error) {
+      console.log(error)
       if (error instanceof UnauthorizedException) {
+
         throw error;
       }
       throw new NotFoundException(error.message);
@@ -59,6 +60,19 @@ export class InspectionController {
   async getAllInspections(@User() user: UserEntity): Promise<InspectionEntity[]> {
     try {
       return await this.inspectionService.getAllInspections(user);
+    } catch (error) {
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      }
+      throw new NotFoundException(error.message);
+    }
+  }
+
+  @Get("/byinst/:id")
+  @Roles('admin','user')
+  async getAllInspectionsByInstitution(@User() user: UserEntity,@Param('id', ParseIntPipe) institutionId: number): Promise<InspectionEntity[]> {
+    try {
+      return await this.inspectionService.getAllInspectionsByInstitution(user,institutionId);
     } catch (error) {
       if (error instanceof UnauthorizedException) {
         throw error;

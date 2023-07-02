@@ -49,10 +49,10 @@ export class EvaluationPointService {
 
   async getEvaluationPointById(id: number, user: UserEntity): Promise<EvaluationPointEntity> {
     const query = this.evaluationPointRepository.createQueryBuilder('evaluationPoint')
-    /*   .leftJoinAndSelect('evaluationPoint.evaluations', 'evaluation')
+      .leftJoinAndSelect('evaluationPoint.evaluations', 'evaluation')
       .leftJoinAndSelect('evaluation.inspection', 'inspection')
       .where('evaluationPoint.id = :id', { id });
-   */
+
     //query.andWhere('inspection.userId = :userId', { userId: user.id });
   
     const evaluationPoint = await query.getOne();
@@ -154,7 +154,7 @@ export class EvaluationPointService {
     return restoredEvaluationPoint;
   }
 
-  async deleteEvaluationPoint(user: UserEntity, evaluationPointId: number): Promise<string> {
+  async deleteEvaluationPoint(user: UserEntity, evaluationPointId: number): Promise<any> {
     // Vérifier si l'utilisateur est autorisé à effectuer cette action
     if (!this.userService.isAdmin(user)) {
       throw new UnauthorizedException('Vous n\'êtes pas autorisé à effectuer cette action.');
@@ -169,7 +169,7 @@ export class EvaluationPointService {
     }
 
     // Envoyer une réponse pour indiquer que l'opération s'est déroulée avec succès
-    return `Le point d'évaluation a été supprimé avec succès.`;
+    return {message:"Le point d'évaluation a été supprimé avec succès."};
   }
 
 
